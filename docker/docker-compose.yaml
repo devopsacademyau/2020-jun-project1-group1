@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+
+  wordpress:
+    image: ${DOCKER_REPOSITORY}
+    build:
+      context: .
+    ports:
+      - 8080:80
+    volumes: 
+      - wordpress:/var/www/html
+    environment: 
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+    depends_on: 
+      - db
+
+  db:
+    image: mysql:5.7
+    environment: 
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
+      MYSQL_USER: ${WORDPRESS_DB_USER}
+      MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: root#secret
+    volumes:
+      - db:/var/lib/mysql
+  
+volumes:
+  wordpress:
+  db:
