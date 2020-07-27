@@ -74,22 +74,42 @@ docker push 097922957316.dkr.ecr.ap-southeast-2.amazonaws.com/devops-wordpress:f
 docker pull 097922957316.dkr.ecr.ap-southeast-2.amazonaws.com/devops-wordpress:f5bcbb2
 ```
 
-## Providers
+## Required Inputs
 
-| Name | Version |
-|------|---------|
-| aws | n/a |
+No required input.
 
-## Inputs
+## Optional Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| common\_tags | common tags which will be merged with all resources created. | `map(string)` | <pre>{<br>  "deployed_by": "terraform",<br>  "devops_academy": "project1"<br>}</pre> | no |
-| repository\_name | the name of the ECR repository to be created. | `string` | n/a | yes |
+The following input variables are optional (have default values):
+
+### common\_tags
+
+Description: common tags which will be merged with all resources created.
+
+Type: `map(string)`
+
+Default:
+
+```json
+{
+  "deployed_by": "terraform",
+  "devops_academy": "project1"
+}
+```
+
+### repository\_name
+
+Description: the name of the ECR repository to be created.
+
+Type: `string`
+
+Default: `"devops-wordpress"`
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| ecr\_repository | attributes of the ecr repository created. |
+The following outputs are exported:
+
+### ecr\_repository
+
+Description: attributes of the ecr repository created.
 
