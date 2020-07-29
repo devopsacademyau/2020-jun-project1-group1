@@ -1,0 +1,7 @@
+formatter: markdown document
+header-from: doc.md
+
+sections:
+  hide:
+    - providers
+    - requirements
