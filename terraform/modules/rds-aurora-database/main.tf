@@ -1,64 +1,26 @@
-// setting the provider
-provider "aws" {
-  version = "~> 2.0"
-  region  = "ap-southeast-2"
-}
-
-
-// defining custom vpc
-// TODO: utilize the project's main VPC
-resource "aws_vpc" "temp_custom_vpc" {
-  cidr_block = "192.168.0.0/16"
-  tags = {
-    "Name" = "Terraform - temp_custom_vpc"
-  }
-}
-
-//defining custom subnet
-// TODO: utilize the project's subnetsh
-resource "aws_subnet" "temp_da_rds_subnet" {
-  vpc_id     = aws_vpc.temp_custom_vpc.id
-  cidr_block = "192.168.51.0/24"
-  availability_zone = "ap-southeast-2a"
-
-  tags = {
-    Name = "Terraform - temp_da_rds_subnet"
-  }
-}
-
-resource "aws_subnet" "temp_da_rds_subnet2" {
-  vpc_id     = aws_vpc.temp_custom_vpc.id
-  cidr_block = "192.168.52.0/24"
-  availability_zone = "ap-southeast-2b"
-
-  tags = {
-    Name = "Terraform - temp_da_rds_subnet2"
-  }
-}
-
 //defining custom subnet for the database
 resource "aws_db_subnet_group" "da_db_subnet_group" {
-  name       = "aws_db_subnet_group_da_sb_subnet"
-  subnet_ids = [aws_subnet.temp_da_rds_subnet.id, aws_subnet.temp_da_rds_subnet2.id]
+  name       = "${var.project}-db-subnet-group"
+  subnet_ids = var.private_subnets
 
   tags = {
-    Name = "Terraform - My DB subnet group"
+    Name = "${var.project}-DB subnet group"
   }
 }
 
 //defining security group
 // TODO: update rules accordingly
 resource "aws_security_group" "da_rds_security_group" {
-  name        = "access to mysql"
+  name        = "${var.project} access to mysql"
   description = "Allow inbound traffic on port 3306"
-  vpc_id      = aws_vpc.temp_custom_vpc.id
+  vpc_id      = var.vpc.id
 
   ingress {
     description = "Aurora mysql Inbound"
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = [aws_vpc.temp_custom_vpc.cidr_block]
+    cidr_blocks = [var.vpc.cidr_block]
   }
 
   egress {
@@ -69,7 +31,7 @@ resource "aws_security_group" "da_rds_security_group" {
   }
 
   tags = {
-    "Name" = "Terraform security group"
+    "Name" = "${var.project}-aurora-db-sg"
   }
 
 }
