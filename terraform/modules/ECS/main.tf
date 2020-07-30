@@ -15,7 +15,7 @@ resource "aws_security_group" "ecs-access-security-group" {
     to_port         = 0 
     protocol        = "-1" 
     cidr_blocks     = ["0.0.0.0/0"]
- #  security_groups =  output SG from alb
+ #  security_groups =  output SG from alb????
     description     = "inbound allowed only via Application load balancer"
     }
 
