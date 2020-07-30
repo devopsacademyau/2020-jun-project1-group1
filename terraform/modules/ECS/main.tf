@@ -1,10 +1,3 @@
-provider "aws" {
-  region = "ap-southeast-2"
-}
-
-#################################################
-########   Security group for ECS
-#################################################
 
 #create ecs security group
 resource "aws_security_group" "ecs-access-security-group" {
@@ -30,11 +23,6 @@ resource "aws_security_group" "ecs-access-security-group" {
     Name = "${var.project-name}-ecs-access-security-group"
   }
 }
-
-#################################################
-########   I AM STUFF 
-#################################################
-
 
 resource "aws_iam_role" "ecs-instance-role" {
     name                = "ecs-instance-role"
@@ -66,15 +54,11 @@ resource "aws_iam_instance_profile" "ecs-instance-profile" {
     }
 
 
-#################################################
-########   ECS stuff
-#################################################
-
 # create launch configuration
 resource "aws_launch_configuration" "ecs-launch-configuration" {
     name                        = "${var.project-name}-ecs-launch-configuration"
-    image_id                    = "ami-0b781a9543e01e880"
-    instance_type               = "t2.micro"
+    image_id                    = var.image_id
+    instance_type               = var.instance_type
     iam_instance_profile        = aws_iam_instance_profile.ecs-instance-profile.arn
     lifecycle {
      	create_before_destroy = true
