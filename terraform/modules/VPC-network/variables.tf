@@ -34,3 +34,8 @@ variable "map_public_ip2" {
     type    = bool
     default = true
 }
+
+variable "deploy_nat" {
+    type = bool
+    default = true
+}

@@ -88,6 +88,8 @@ resource "aws_eip" "NAT-EIP" {
 
 # NAT Gateway
 resource "aws_nat_gateway" "NAT-GW" {
+  count = var.deploy_nat ? 1 : 0	
+
   allocation_id = aws_eip.NAT-EIP.id
   subnet_id     = aws_subnet.subnet-public-1.id
   depends_on = [aws_internet_gateway.IGW]
