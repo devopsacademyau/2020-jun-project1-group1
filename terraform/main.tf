@@ -19,13 +19,13 @@ module "rds-aurora-database" {
   private_subnets = module.vpc.private_subnets[*].id
 }
 
-# module "load_balancer" {
-#   source        = "./modules/load_balancer"
-#   project       = var.project
-#   vpc_id        = module.vpc.vpc_id
-#   lb_subnets    = module.vpc.public_subnets[*].id
-#   https_enabled = var.https_enabled
-# }
+module "load_balancer" {
+  source        = "./modules/load_balancer"
+  project       = var.project
+  vpc_id        = module.vpc.vpc_id
+  lb_subnets    = module.vpc.public_subnets[*].id
+  https_enabled = var.https_enabled
+}
 
 module "container_registry" {
   source = "./modules/container_registry"
