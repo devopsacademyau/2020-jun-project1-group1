@@ -67,7 +67,7 @@ resource "aws_launch_configuration" "ecs-launch-configuration" {
     associate_public_ip_address = "true"
     user_data                   = <<EOF
                                   #!/bin/bash
-                                  echo ECS_CLUSTER=aws_ecs_cluster.ecs-cluster.name >> /etc/ecs/ecs.config
+                                  echo ECS_CLUSTER=${aws_ecs_cluster.ecs-cluster.name} >> /etc/ecs/ecs.config
                                   EOF
 }
 
