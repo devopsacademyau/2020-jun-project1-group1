@@ -13,14 +13,18 @@ resource "aws_route_table" "route-table-PUB" {
 # private
 resource "aws_route_table" "route-table-PRI" {
     vpc_id = aws_vpc.vpc.id
-    route {
-      cidr_block = "0.0.0.0/0"
-      gateway_id = aws_nat_gateway.NAT-GW.id
-    }
+
     tags = {
 	Name = "${var.project-name}-route-table-PRI"
 	}
 		
+}
+
+resource "aws_route" "private-nat-route" {
+    count = length(aws_nat_gateway.NAT-GW)
+    route_table_id = aws_route_table.route-table-PRI.id
+    destination_cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.NAT-GW[count.index].id
 }
 
 # route table associations
