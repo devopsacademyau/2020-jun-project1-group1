@@ -1,40 +1,36 @@
+#mount File
 resource "aws_efs_file_system" "efs_file" {
-  creation_token = "my-efs"
+  creation_token   = var.project_name
+  throughput_mode  = "bursting"
+  performance_mode = "generalPurpose"
+  encrypted        = false
 
   tags = {
     Name = "wordpress"
   }
 }
 
-resource "aws_efs_mount_target" "alpha" {
+resource "aws_efs_mount_target" "default" {
 
-  count = length(var.subnet_ids)
+  count = length(var.vpc.private_subnets_ids)
 
-  file_system_id = "${aws_efs_file_system.foo.id}"
-  subnet_id      = var.subnet_ids[count.index]
+  file_system_id  = aws_efs_file_system.efs_file.id
+  subnet_id       = var.vpc.private_subnets_ids[count.index]
+  security_groups = [aws_security_group.efs_sg.id]
 }
 
-resource "aws_vpc" "foo" {
-  cidr_block = "10.0.0.0/16"
-}
-
-resource "aws_subnet" "alpha" {
-  vpc_id            = "${aws_vpc.foo.id}"
-  availability_zone = "us-west-2a"
-  cidr_block        = "10.0.1.0/24"
-}
-
+#Create Security Group to allow access
 resource "aws_security_group" "efs_sg" {
   description = "allows access to the EFS"
 
-  vpc_id = var.vpc_id
+  vpc_id = var.vpc.id
   name   = "efs-sg"
 
   ingress {
     protocol        = "tcp"
     from_port       = 2049
     to_port         = 2049
-    security_groups = [var.efs_sg.sg_id]
+    security_groups = [var.ecs_sg_id]
   }
 
   egress {
@@ -42,6 +38,14 @@ resource "aws_security_group" "efs_sg" {
     to_port   = 0
     protocol  = "-1"
 
-    cidr_blocks = [var.cidr_vpc]
+    cidr_blocks = [var.cidr_block]
+  }
+}
+
+#Create Access Point
+resource "aws_efs_access_point" "wordpress" {
+  file_system_id = aws_efs_file_system.efs_file.id
+  root_directory {
+    path          = "/wordpress"
   }
 }
