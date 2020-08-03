@@ -42,9 +42,14 @@ module "container_registry" {
   ecs_sg_id = module.ECS.ecs-access-security-group.id
 }
 
-# module "ECS_CLUSTER_MODULE" {
-#   source = "MODULE_PATH"
-# }
+module "ECS_CLUSTER_MODULE" {
+  source = "./modules/ECS"
+  project-name      = var.project
+  target_group_arn  = module.load_balancer.target_group_arn
+  vpc_id 	     = module.vpc.vpc_id
+  subnet-public-1   = module.vpc.subnet-public-1
+  subnet-public-2   = module.vpc.subnet-public-2
+ }
 
 # module "ECS_SERVICE_MODULE" {
 #   source = "MODULE_PATH"
