@@ -31,7 +31,7 @@ module "container_registry" {
   source = "./modules/container_registry"
 }
 
- module "efs" {
+ module "EFS" {
   source = "./modules/efs"
   project_name = var.project
   vpc = {
@@ -39,7 +39,7 @@ module "container_registry" {
     private_subnets_ids = module.vpc.private_subnets[*].id
   }
   cidr_block = var.vpcCIDR
-  ecs_sg_id = module.ECS.ecs-access-security-group.id
+  ecs_sg_id = module.ECS_CLUSTER_MODULE.ecs-access-security-group
 }
 
 module "ECS_CLUSTER_MODULE" {
