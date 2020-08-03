@@ -2,7 +2,7 @@
 
 This module abstract the creation of an Application Load Balancer, Target Groups, Listeners and Security Groups.
 
-Ideally, someone who would use the `target_group_arn` output from this module to attatch to an Autoscalling Group using
+Ideally, someone who would use the `target_group_arn` output from this module to attach to an Autoscalling Group using
 `aws_autoscalling_attachment` resource and passing the `autoscalling_group_name`. Please refer for the example below:
 
 ```hcl

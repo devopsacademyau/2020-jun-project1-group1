@@ -1,7 +1,18 @@
 version: "3.8"
 
-services: 
+services:
   terraform-docs:
     image: quay.io/terraform-docs/terraform-docs:0.10.0-rc.1
     volumes:
       - ./terraform/modules:/modules
+
+  aws:
+    image: amazon/aws-cli:2.0.36
+    volumes:
+      - ${PWD}:/app
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_DEFAULT_REGION
+    entrypoint:
+      - aws
