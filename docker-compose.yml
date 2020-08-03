@@ -1,0 +1,7 @@
+version: "3.8"
+
+services: 
+  terraform-docs:
+    image: quay.io/terraform-docs/terraform-docs:0.10.0-rc.1
+    volumes:
+      - ./terraform/modules:/modules
