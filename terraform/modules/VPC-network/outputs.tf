@@ -36,3 +36,10 @@ output "private_subnets" {
     }
   ]
 }
+
+output "subnet-public-1" {
+  value = aws_subnet.subnet-public-1.id
+}
+output "subnet-public-2" {
+  value = aws_subnet.subnet-public-2.id
+}
