@@ -12,6 +12,7 @@
 * [About the Project](#about-the-project)
   * [Solution Diagram](#solution-diagram)
   * [Technologies](#technologies)
+* [Documents](#documents-index)
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
@@ -49,6 +50,18 @@ This cloud migration is designed to comply with the following requirements:
 * [Amazon Aurora](https://aws.amazon.com/rds/aurora/)
 * [Amazon Elastic Container Service](https://aws.amazon.com/ecs/)
 
+## Documents Index
+
+* [Docker Wordpress - How to use](docs/docker-wordpress.md)
+* [Scripts Usage](docs/scripts.md)
+* Terraform Modules
+  * [VPC](terraform/modules/VPC-network/README.md)
+  * [ECS Cluster](terraform/modules/ECS/README.md)
+  * [ECR - Container Registry](terraform/modules/container_registry/README.md)
+  * [Load Balancer](terraform/modules/load_balancer/README.md)
+  * [RDS Database](terraform/modules/rds-aurora-database/README.md)
+  * **ECS Task and Service**
+  * [EFS](terraform/modules/efs/README.md)
 
 <!-- GETTING STARTED -->
 ## Getting Started
