@@ -19,16 +19,14 @@ build-wp:
 .PHONY: build-wp
 
 push-wp:
-	@export DOCKER_REGISTRY_URL=${DOCKER_REGISTRY_URL}
 	@export DOCKER_REPOSITORY=${DOCKER_REPOSITORY}
-	@export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
 	@cd docker && $(MAKE) push
 .PHONY: push-wp
 
 deploy-wp:
-	DOCKER_REPOSITORY=${DOCKER_REPOSITORY} \
-	AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} \
-	scripts/deploy-wp.sh
+	@export DOCKER_REPOSITORY=${DOCKER_REPOSITORY}
+	@export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+	@scripts/deploy-wp.sh
 .PHONY: deploy-wp
 
 ecr-login:
