@@ -19,6 +19,7 @@ build-wp:
 .PHONY: build-wp
 
 push-wp:
+	@export DOCKER_REGISTRY_URL=${DOCKER_REGISTRY_URL}
 	@export DOCKER_REPOSITORY=${DOCKER_REPOSITORY}
 	@export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
 	@cd docker && $(MAKE) push
@@ -63,7 +64,7 @@ ga-test-env-files:
 
 ga-test-pr-build-wp: ga-test-env-files
 	act pull_request \
-		--job build_push_wp
+		--job build_push_wp \
 		--secret-file .github/secrets \
 		--env-file .github/.env \
 		-P ubuntu-20.04=flemay/musketeers
