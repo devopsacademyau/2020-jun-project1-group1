@@ -50,18 +50,29 @@ ecr-login:
 ga-test-env-files:
 	@if [ ! -f ".github/secrets" ]; then \
 		echo "${C_RED}must create secrets file in .github/secrets"; \
+		echo "check template in .github/templates/secrets.template"; \
 		exit 1; \
 	fi
 
 	@if [ ! -f ".github/.env" ]; then \
 		echo "${C_RED}must create secrets file in .github/.env"; \
+		echo "check template in .github/templates/.env.template"; \
 		exit 1; \
 	fi
 .PHONY:ga-test-env-files
 
-ga-test-pr-wp: ga-test-env-files
+ga-test-pr-build-wp: ga-test-env-files
 	act pull_request \
+		--job build_push_wp
 		--secret-file .github/secrets \
 		--env-file .github/.env \
 		-P ubuntu-20.04=flemay/musketeers
-.PHONY:ga-test-pr-wp
+.PHONY:ga-test-pr-build-wp
+
+ga-test-push-deploy-wp: ga-test-env-files
+	act push \
+		--job deploy_wp \
+		--secret-file .github/secrets \
+		--env-file .github/.env \
+		-P ubuntu-20.04=flemay/musketeers
+.PHONY:ga-test-push-wp
