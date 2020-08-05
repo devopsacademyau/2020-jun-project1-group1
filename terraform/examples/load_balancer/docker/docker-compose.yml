@@ -1,0 +1,9 @@
+version: "3.8"
+
+services: 
+  nginx:
+    image: 097922957316.dkr.ecr.ap-southeast-2.amazonaws.com/nginx:v5
+    build:
+      context: .
+    ports:
+      - 8080:80

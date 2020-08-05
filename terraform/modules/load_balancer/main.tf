@@ -25,6 +25,13 @@ resource "aws_lb_target_group" "this" {
   vpc_id   = var.vpc_id
 }
 
+resource "aws_lb_target_group" "test" {
+  name     = "${var.project}-test-lb-tg"
+  port     = local.targetPort
+  protocol = local.targetProtocol
+  vpc_id   = var.vpc_id
+}
+
 resource "aws_lb_listener" "this" {
   load_balancer_arn = aws_lb.this.arn
   port              = local.targetPort

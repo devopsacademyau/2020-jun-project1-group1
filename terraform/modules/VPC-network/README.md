@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 ## Required Inputs
 
 The following input variables are required:
@@ -99,3 +100,88 @@ Description: n/a
 
 Description: n/a
 
+=======
+## Requirements
+
+No requirements.
+
+## Providers
+
+The following providers are used by this module:
+
+- aws
+
+## Required Inputs
+
+The following input variables are required:
+
+### project-name
+
+Description: variable declaration
+
+Type: `string`
+
+## Optional Inputs
+
+The following input variables are optional (have default values):
+
+### dnsHostNames
+
+Description: n/a
+
+Type: `bool`
+
+Default: `true`
+
+### dnsSupport
+
+Description: n/a
+
+Type: `bool`
+
+Default: `true`
+
+### instanceTenancy
+
+Description: defult or dedicated
+
+Type: `list(string)`
+
+Default:
+
+```json
+[
+  "default",
+  "dedicated"
+]
+```
+
+### map\_public\_ip1
+
+Description: n/a
+
+Type: `bool`
+
+Default: `true`
+
+### map\_public\_ip2
+
+Description: n/a
+
+Type: `bool`
+
+Default: `true`
+
+### vpcCIDR
+
+Description: VPC network
+
+Type: `string`
+
+Default: `"192.168.0.0/16"`
+
+## Outputs
+
+No output.
+
+>>>>>>> Stashed changes

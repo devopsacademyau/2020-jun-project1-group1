@@ -1,0 +1,15 @@
+[
+    {
+        "name": "nginx",
+        "image": "097922957316.dkr.ecr.ap-southeast-2.amazonaws.com/nginx:v5",
+        "cpu": 5,
+        "memory": 256,
+        "essential": true,
+        "portMappings": [
+            {
+                "containerPort": 80,
+                "hostPort": 80
+            }
+        ]
+    }
+]

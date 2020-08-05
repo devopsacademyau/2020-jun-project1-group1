@@ -1,0 +1,17 @@
+{
+    "version": 0.0,
+    "Resources": [
+      {
+        "TargetService": {
+          "Type": "AWS::ECS::Service",
+          "Properties": {
+            "TaskDefinition": "arn:aws:ecs:ap-southeast-2:097922957316:task-definition/service:15",
+            "LoadBalancerInfo": {
+              "ContainerName": "nginx",
+              "ContainerPort": 80
+            }
+          }
+        }
+      }
+    ]
+  }
