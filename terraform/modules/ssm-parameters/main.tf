@@ -1,4 +1,3 @@
-
 resource "aws_ssm_parameter" "db_host" {
   name        = "WORDPRESS_DB_HOST"
   description = "Database Host Paramater"
@@ -48,4 +47,3 @@ resource "aws_ssm_parameter" "db_password" {
     ]
   }
 }
-

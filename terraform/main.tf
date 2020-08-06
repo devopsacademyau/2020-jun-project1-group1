@@ -5,11 +5,11 @@ module "vpc" {
   deploy_nat   = var.deploy_nat
 }
 
-module "rds" {
-  source = "./modules/rds"
+module "ssm_parameters" {
+  source = "./modules/ssm-parameters"
 }
 
-module "rds-aurora-database" {
+module "rds_aurora_database" {
   source  = "./modules/rds-aurora-database"
   project = var.project
   vpc = {
@@ -31,26 +31,71 @@ module "container_registry" {
   source = "./modules/container_registry"
 }
 
- module "EFS" {
-  source = "./modules/efs"
+module "efs" {
+  source       = "./modules/efs"
   project_name = var.project
   vpc = {
     id                  = module.vpc.vpc_id
     private_subnets_ids = module.vpc.private_subnets[*].id
   }
   cidr_block = var.vpcCIDR
-  ecs_sg_id = module.ECS_CLUSTER_MODULE.ecs-access-security-group
+  ecs_sg_id  = module.ecs_cluster_wordpress.ecs-access-security-group
 }
 
-module "ECS_CLUSTER_MODULE" {
-  source = "./modules/ECS"
-  project-name      = var.project
-  target_group_arn  = module.load_balancer.target_group_arn
-  vpc_id 	     = module.vpc.vpc_id
-  subnet-public-1   = module.vpc.subnet-public-1
-  subnet-public-2   = module.vpc.subnet-public-2
- }
+module "ecs_cluster_wordpress" {
+  source           = "./modules/ECS"
+  project-name     = var.project
+  target_group_arn = module.load_balancer.target_group_arn
+  vpc_id           = module.vpc.vpc_id
+  subnet-public-1  = module.vpc.subnet-public-1
+  subnet-public-2  = module.vpc.subnet-public-2
 
-# module "ECS_SERVICE_MODULE" {
-#   source = "MODULE_PATH"
-# }
+  container_name  = module.container_registry.ecr_repository.name
+  container_image = module.container_registry.ecr_repository.repository_url
+
+  secrets = [
+    {
+      name      = module.ssm_parameters.rds_secrets.db_host.name
+      valueFrom = module.ssm_parameters.rds_secrets.db_host.arn
+    },
+    {
+      name      = module.ssm_parameters.rds_secrets.db_name.name
+      valueFrom = module.ssm_parameters.rds_secrets.db_name.arn
+    },
+    {
+      name      = module.ssm_parameters.rds_secrets.db_user.name
+      valueFrom = module.ssm_parameters.rds_secrets.db_user.arn
+    },
+    {
+      name      = module.ssm_parameters.rds_secrets.db_password.name
+      valueFrom = module.ssm_parameters.rds_secrets.db_password.arn
+    }
+  ]
+
+  efs_volume_configuration = {
+    file_system_id          = module.efs.id
+    root_directory          = "/wordpress/data"
+    transit_encryption      = "ENABLED"
+    transit_encryption_port = 2999
+  }
+
+  port_mappings = var.port_mappings
+
+  mount_points = var.mount_points
+}
+
+module "code_deploy" {
+  source                     = "./modules/ecs-code-deploy"
+  project                    = var.project
+  ecs_cluster_name           = module.ecs_cluster_wordpress.ecs_name
+  ecs_service_name           = module.ecs_cluster_wordpress.ecs_service_name
+  lb_listener_arns           = [module.load_balancer.http_alb_listener_arn]
+  blue_lb_target_group_name  = module.load_balancer.alb_target_group_name
+  green_lb_target_group_name = module.load_balancer.alb_group_green_name
+
+  auto_rollback_enabled            = true
+  auto_rollback_events             = ["DEPLOYMENT_FAILURE"]
+  action_on_timeout                = "STOP_DEPLOYMENT"
+  wait_time_in_minutes             = 20
+  termination_wait_time_in_minutes = 20
+}

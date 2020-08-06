@@ -58,3 +58,11 @@ resource "aws_security_group" "allow_web" {
     Name = "${var.project}-allow-web-access-sg"
   }
 }
+
+resource "aws_lb_target_group" "green" {
+  name        = "green"
+  vpc_id      = var.vpc_id
+  port        = local.targetPort
+  protocol    = "HTTP"
+  target_type = "ip"
+}
