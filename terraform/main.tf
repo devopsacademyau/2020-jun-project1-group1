@@ -5,12 +5,8 @@ module "vpc" {
   deploy_nat   = var.deploy_nat
 }
 
-module "ssm_parameters" {
-  source = "./modules/ssm-parameters"
-}
-
-module "rds_aurora_database" {
-  source  = "./modules/rds-aurora-database"
+module "rds" {
+  source = "./modules/rds"
   project = var.project
   vpc = {
     id         = module.vpc.vpc_id
