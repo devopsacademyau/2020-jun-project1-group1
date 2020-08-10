@@ -54,6 +54,7 @@ This cloud migration is designed to comply with the following requirements:
 
 * [Docker Wordpress - How to use](docs/docker-wordpress.md)
 * [Scripts Usage](docs/scripts.md)
+* [GitHub Actions/Workflows](docs/github-workflows.md)
 * Terraform Modules
   * [VPC](terraform/modules/VPC-network/README.md)
   * [ECS Cluster](terraform/modules/ECS/README.md)

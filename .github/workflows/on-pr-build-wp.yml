@@ -1,0 +1,40 @@
+name: on-pr-build-wp
+
+# triger function for pull request on master and when changes were made in docker folder
+
+on:
+  pull_request:
+    branches: [ master ]
+    paths: [ 'docker/**/*' ]
+
+jobs:
+  build_push_wp:
+    runs-on: ubuntu-20.04
+
+    # global env, all steps from this job will be able to access it
+    env:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      DOCKER_REPOSITORY: devops-wordpress
+      # DOCKER_REGISTRY_URL: "REPLACE FOR THE REGISTRY URL"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Preparing environment
+        run: |
+          docker-compose pull aws
+
+      - name: Building docker image
+        run: make build-wp
+
+      - name: Authenticating with ECR
+        run: make ecr-login
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Pushing new image to repository
+        run: make push-wp
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
