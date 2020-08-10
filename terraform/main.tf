@@ -51,20 +51,20 @@ module "ecs_cluster_wordpress" {
 
   secrets = [
     {
-      name      = module.ssm_parameters.rds_secrets.db_host.name
-      valueFrom = module.ssm_parameters.rds_secrets.db_host.arn
+      name      = module.rds.secrets.db_host.name
+      valueFrom = module.rds.secrets.db_host.arn
     },
     {
-      name      = module.ssm_parameters.rds_secrets.db_name.name
-      valueFrom = module.ssm_parameters.rds_secrets.db_name.arn
+      name      = module.rds.secrets.db_name.name
+      valueFrom = module.rds.secrets.db_name.arn
     },
     {
-      name      = module.ssm_parameters.rds_secrets.db_user.name
-      valueFrom = module.ssm_parameters.rds_secrets.db_user.arn
+      name      = module.rds.secrets.db_user.name
+      valueFrom = module.rds.secrets.db_user.arn
     },
     {
-      name      = module.ssm_parameters.rds_secrets.db_password.name
-      valueFrom = module.ssm_parameters.rds_secrets.db_password.arn
+      name      = module.rds.secrets.db_password.name
+      valueFrom = module.rds.secrets.db_password.arn
     }
   ]
 
