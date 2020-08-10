@@ -1,5 +1,3 @@
-SHA = $(shell git rev-parse --short HEAD)
-
 ##TASKS
 init:
 	bash -x ../scripts/terraform-auto/init.sh
