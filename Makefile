@@ -75,3 +75,30 @@ ga-test-push-deploy-wp: ga-test-env-files
 		--env-file .github/.env \
 		-P ubuntu-20.04=flemay/musketeers
 .PHONY:ga-test-push-wp
+
+test-aws:
+	$(DOCKER_RUNNER) aws sts get-caller-identity --output json
+.PHONY:test-aws
+
+
+tf-ci-plan:
+	@$(DOCKER_RUNNER) ci-terraform init
+	@$(DOCKER_RUNNER) ci-terraform plan -var-file="main.tfvars" -out terraform-plan 
+.PHONY:tf-ci-plan
+
+
+tf-ci-apply:
+	@$(DOCKER_RUNNER) ci-terraform apply -auto-approve "terraform-plan"
+.PHONY:tf-ci-apply
+
+
+tf-ci-remove:
+	@$(DOCKER_RUNNER) ci-terraform destroy -auto-approve -var-file="main.tfvars"
+.PHONY:tf-ci-remove
+
+
+all : 
+	make tf-ci-plan
+	make tf-ci-apply
+.PHONY: all
+
