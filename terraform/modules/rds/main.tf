@@ -45,9 +45,9 @@ resource "aws_rds_cluster" "da-aurora-cluster" {
   engine_version          = "5.7.mysql_aurora.2.07.1"
   engine_mode             = "serverless"
   # availability_zones      = ["ap-southeast-2"]
-  database_name           = "mydb"
-  master_username         = "testuser"
-  master_password         = "test-password"
+  database_name           = aws_ssm_parameter.db_name.value #"mydb"
+  master_username         = aws_ssm_parameter.db_user.value  #"testuser"
+  master_password         = aws_ssm_parameter.db_password.value #"test-password"
   backup_retention_period = 1
   vpc_security_group_ids  = [aws_security_group.da_rds_security_group.id]
   db_subnet_group_name    = aws_db_subnet_group.da_db_subnet_group.name
@@ -58,4 +58,60 @@ resource "aws_rds_cluster" "da-aurora-cluster" {
     min_capacity = 1
     max_capacity = 2
   }
+}
+
+#SSM Parameters
+resource "aws_ssm_parameter" "db_host" {
+  name        = "WORDPRESS_DB_HOST"
+  description = "Database Host Paramater"
+  type        = "SecureString"
+  value       = aws_rds_cluster.da-aurora-cluster.endpoint
+  overwrite   = true
+}
+
+resource "aws_ssm_parameter" "db_name" {
+  name        = "WORDPRESS_DB_NAME"
+  description = "Database Name Paramater"
+  type        = "SecureString"
+  value       = var.db_name
+  overwrite   = false
+
+  lifecycle {
+    ignore_changes = [
+      value
+    ]
+  }
+}
+
+resource "aws_ssm_parameter" "db_user" {
+  name        = "WORDPRESS_DB_USERNAME"
+  description = "Database User Paramater"
+  type        = "SecureString"
+  value       = var.db_user
+  overwrite   = false
+
+  lifecycle {
+    ignore_changes = [
+      value
+    ]
+  }
+}
+
+resource "aws_ssm_parameter" "db_password" {
+  name        = "WORDPRESS_DB_PASSWORD"
+  description = "Database Password Paramater"
+  type        = "SecureString"
+  value       = random_password.db_password.result
+  overwrite   = false
+
+  lifecycle {
+    ignore_changes = [
+      value
+    ]
+  }
+}
+resource "random_password" "db_password" {
+  length           = 8
+  special          = true
+  override_special = "!#*"
 }
