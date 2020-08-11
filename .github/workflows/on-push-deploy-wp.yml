@@ -1,0 +1,20 @@
+name: on-push-deploy-wp
+
+on:
+  push:
+    branches: [ master ]
+    paths: [ 'docker/**/*' ]
+
+jobs:
+  deploy_wp:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Deploy wordpress to ECS
+        run: make deploy-wp
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}

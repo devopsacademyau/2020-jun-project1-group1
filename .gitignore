@@ -6,3 +6,5 @@
 .terraform*
 **/*.tfstate
 !.terraform-docs.yml
+.github/secrets
+.env

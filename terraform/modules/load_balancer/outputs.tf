@@ -12,3 +12,18 @@ output "load_balancer" {
     zone_id    = aws_lb.this.zone_id
   }
 }
+
+output "http_alb_listener_arn" {
+  value       = aws_lb_listener.this.arn
+  description = "The ARN of the HTTP listener (matches id)"
+}
+
+output "alb_target_group_name" {
+  value       = aws_lb_target_group.this.name
+  description = "The name of the Target Group."
+}
+
+output "alb_group_green_name" {
+  value       = aws_lb_target_group.green.name
+  description = "The name of the Target Group Green."
+}

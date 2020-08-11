@@ -1,11 +1,11 @@
-include .env
+-include .env
 
 COMMIT_SHA ?= $(shell git rev-parse --short HEAD)
-AWS_REGION ?= $(shell cat ~/.aws/config | grep -m 1 region | sed 's/region = //')
+AWS_DEFAULT_REGION ?= $(shell cat ~/.aws/config | grep -m 1 region | sed 's/region = //')
 AWS_ACCOUNT_ID ?= $(shell aws sts get-caller-identity --query "Account" --output text)
 
 DOCKER_REPOSITORY ?= devops-wordpress
-DOCKER_REGISTRY_URL ?= ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+DOCKER_REGISTRY_URL ?= ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
 
 C_GREEN ?= \e[32m
 C_RESET ?= \e[0m
@@ -29,7 +29,7 @@ ecr-login:
 	@echo "\n === 🔐 Login to ECR docker registry: ${C_GREEN}${DOCKER_REGISTRY_URL}${C_RESET}\n"
 
 	@aws ecr get-login-password \
-		--region ${AWS_REGION} \
+		--region ${AWS_DEFAULT_REGION} \
 		| docker login \
 		--username AWS \
 		--password-stdin ${DOCKER_REGISTRY_URL}
