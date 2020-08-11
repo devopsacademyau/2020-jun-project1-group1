@@ -1,3 +1,0 @@
-cd ../terraform
-terraform init
-
