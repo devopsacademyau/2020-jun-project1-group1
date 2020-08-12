@@ -17,8 +17,9 @@ jobs:
         shell: bash
 # Checkout the repository to the GitHub Actions runner
     steps:
-        uses: actions/checkout@v2
-        name: initialise and plan terraform
+      - uses: actions/checkout@v2
+
+      - name: plan terrform
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
