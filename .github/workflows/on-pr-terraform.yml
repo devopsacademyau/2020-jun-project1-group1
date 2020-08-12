@@ -1,0 +1,25 @@
+name: on-pr-terraform
+
+# triger function for pull request on master and when changes were made in terraform folder
+
+on:
+  pull_request:
+    branches: [ master ]
+    paths: [ 'terraform/**' ]
+  
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+    # Checkout the repository to the GitHub Actions runner
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: plan terrform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: make tf-ci-plan
