@@ -23,6 +23,7 @@ services:
     working_dir: /terraform
     volumes:
       - ${PWD}/terraform:/terraform
+      - ${HOME}/.aws:/root/.aws
     environment:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
