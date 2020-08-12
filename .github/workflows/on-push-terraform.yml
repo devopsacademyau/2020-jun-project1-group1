@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v2
 # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     steps:
-        - name: initialise, plan and apply terraform
+      - name: apply
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}        
