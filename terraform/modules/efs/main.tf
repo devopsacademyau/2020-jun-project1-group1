@@ -27,9 +27,9 @@ resource "aws_security_group" "efs_sg" {
   name   = "efs-sg"
 
   ingress {
-    protocol = "-1"
-    from_port = 0
-    to_port   = 0
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
     # TODO: fix the security
     # from_port       = 2049
@@ -38,9 +38,9 @@ resource "aws_security_group" "efs_sg" {
   }
 
   egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
     # TODO: fix the security
     # cidr_blocks = [var.cidr_block]

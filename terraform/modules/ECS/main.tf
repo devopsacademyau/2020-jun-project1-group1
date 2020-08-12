@@ -195,9 +195,9 @@ locals {
     readonlyRootFilesystem = var.readonly_root_filesystem
     secrets                = var.secrets
     # mountPoints            = local.mount_points
-    portMappings           = var.port_mappings
-    memory                 = var.container_memory
-    cpu                    = var.container_cpu
+    portMappings = var.port_mappings
+    memory       = var.container_memory
+    cpu          = var.container_cpu
   }
 
   container_definition_without_null = {
