@@ -137,10 +137,11 @@ resource "aws_autoscaling_group" "ecs-autoscaling-group" {
   max_size                  = var.max-size
   min_size                  = var.min-size
   wait_for_capacity_timeout = 0
+  desired_capacity          = min(var.desired_count, var.min-size)
   vpc_zone_identifier       = [var.subnet-public-1, var.subnet-public-2]
   health_check_type         = "EC2"
   target_group_arns         = [var.target_group_arn]
-  health_check_grace_period = 0
+  health_check_grace_period = 300
   default_cooldown          = 300
   termination_policies      = ["OldestInstance"]
   launch_template {
@@ -180,13 +181,13 @@ resource "aws_ecs_cluster" "ecs-cluster" {
 
 locals {
 
-  # mount_points = length(var.mount_points) > 0 ? [
-  #   for mount_point in var.mount_points : {
-  #     containerPath = lookup(mount_point, "containerPath")
-  #     sourceVolume  = lookup(mount_point, "sourceVolume")
-  #     readOnly      = tobool(lookup(mount_point, "readOnly", false))
-  #   }
-  # ] : var.mount_points
+  mount_points = length(var.mount_points) > 0 ? [
+    for mount_point in var.mount_points : {
+      containerPath = lookup(mount_point, "containerPath")
+      sourceVolume  = lookup(mount_point, "sourceVolume")
+      readOnly      = tobool(lookup(mount_point, "readOnly", false))
+    }
+  ] : var.mount_points
 
   container_definition = {
     name                   = var.container_name
@@ -194,7 +195,7 @@ locals {
     essential              = var.essential
     readonlyRootFilesystem = var.readonly_root_filesystem
     secrets                = var.secrets
-    # mountPoints            = local.mount_points
+    mountPoints            = local.mount_points
     portMappings = var.port_mappings
     memory       = var.container_memory
     cpu          = var.container_cpu
@@ -215,26 +216,16 @@ resource "aws_ecs_task_definition" "this" {
   memory                = var.container_memory
   execution_role_arn    = aws_iam_role.ecs-instance-role.arn
 
-  # volume {
-  #   name = var.volume_name
+  volume {
+    name = var.volume_name
 
-  #   # efs_volume_configuration {
-  #   #   file_system_id          = lookup(var.efs_volume_configuration, "file_system_id", null)
-  #   #   root_directory          = lookup(var.efs_volume_configuration, "root_directory", null)
-  #   #   transit_encryption      = lookup(var.efs_volume_configuration, "transit_encryption", null)
-  #   #   transit_encryption_port = lookup(var.efs_volume_configuration, "transit_encryption_port", null)
-  #   # }
-  #   docker_volume_configuration {
-  #     scope = "shared"
-  #     autoprovision = true
-  #     driver = "local"
-  #     driver_opts = {
-  #       type = "nfs"
-  #       device = "${lookup(var.efs_volume_configuration, "file_system_id", null)}.efs.ap-southeast-2.amazonaws.com:/"
-  #       o = "addr=${lookup(var.efs_volume_configuration, "file_system_id", null)}.efs.ap-southeast-2.amazonaws.com,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport"
-  #     }
-  #   }
-  # }
+    efs_volume_configuration {
+      file_system_id          = lookup(var.efs_volume_configuration, "file_system_id", null)
+      root_directory          = lookup(var.efs_volume_configuration, "root_directory", null)
+      transit_encryption      = lookup(var.efs_volume_configuration, "transit_encryption", null)
+      transit_encryption_port = lookup(var.efs_volume_configuration, "transit_encryption_port", null)
+    }
+  }
 
   tags = merge(var.common_tags, {
     Name = "${var.project-name}-ecs-task-definition"

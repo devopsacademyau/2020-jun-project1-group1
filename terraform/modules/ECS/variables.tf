@@ -11,7 +11,7 @@ variable "max-size" {
 variable "min-size" {
   description = "Minimum number of instances in the cluster"
   type        = number
-  default     = 1
+  default     = 2
 }
 
 variable "image_id" {

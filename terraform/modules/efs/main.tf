@@ -51,6 +51,6 @@ resource "aws_security_group" "efs_sg" {
 resource "aws_efs_access_point" "wordpress" {
   file_system_id = aws_efs_file_system.efs_file.id
   root_directory {
-    path = "/wordpress"
+    path = "/"
   }
 }

@@ -71,9 +71,9 @@ module "ecs_cluster_wordpress" {
 
   efs_volume_configuration = {
     file_system_id          = module.efs.id
-    root_directory          = "/wordpress/data"
+    root_directory          = "/"
     transit_encryption      = "ENABLED"
-    transit_encryption_port = 2999
+    transit_encryption_port = null
   }
 
   port_mappings = var.port_mappings

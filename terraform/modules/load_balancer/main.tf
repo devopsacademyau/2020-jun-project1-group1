@@ -23,6 +23,12 @@ resource "aws_lb_target_group" "this" {
   port     = local.targetPort
   protocol = local.targetProtocol
   vpc_id   = var.vpc_id
+  slow_start = 30
+  health_check {
+    healthy_threshold = 5
+    timeout = 15
+    unhealthy_threshold = 3
+  }
 }
 
 resource "aws_lb_listener" "this" {
