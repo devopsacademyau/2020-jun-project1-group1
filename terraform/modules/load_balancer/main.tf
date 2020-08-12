@@ -37,10 +37,27 @@ resource "aws_lb_listener" "this" {
   port              = local.targetPort
   protocol          = local.targetProtocol
   default_action {
+    order = 1
     type             = "forward"
     target_group_arn = aws_lb_target_group.this.arn
   }
+
+  # default_action {
+  #   order = 2
+  #   type             = "forward"
+  #   target_group_arn = aws_lb_target_group.test.arn
+  # }
 }
+
+# resource "aws_lb_listener" "test" {
+#   load_balancer_arn = aws_lb.this.arn
+#   port = 8080
+#   protocol = "HTTP"
+#   default_action {
+#     type = "forward"
+#     target_group_arn = aws_lb_target_group.test.arn
+#   }
+# }
 
 resource "aws_security_group" "allow_web" {
   name   = "${var.project} - allow web access"

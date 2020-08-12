@@ -1,3 +1,3 @@
 FROM nginxdemos/hello
 
-RUN echo "Hello World: v5" >> /usr/share/nginx/html/index.html
+RUN echo "Hello World: v8" >> /usr/share/nginx/html/index.html

@@ -11,6 +11,10 @@ output "target_group_test_name" {
   value = aws_lb_target_group.test.name
 }
 
+output "target_group_test_arn" {
+  value = aws_lb_target_group.test.arn
+}
+
 output "load_balancer" {
   description = "the details of the load balancer created { arn, arn_suffix, dns_name, zone_id }"
   value = {
@@ -24,3 +28,7 @@ output "load_balancer" {
 output "listener_arn" {
   value = aws_lb_listener.this.arn
 }
+
+# output "listener_test_arn" {
+#   value = aws_lb_listener.test.arn
+# }

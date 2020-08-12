@@ -2,7 +2,7 @@
     "containerDefinitions": [
         {
             "name": "nginx",
-            "image": "097922957316.dkr.ecr.ap-southeast-2.amazonaws.com/nginx:v5",
+            "image": "097922957316.dkr.ecr.ap-southeast-2.amazonaws.com/nginx:v8",
             "cpu": 5,
             "memory": 256,
             "essential": true,
