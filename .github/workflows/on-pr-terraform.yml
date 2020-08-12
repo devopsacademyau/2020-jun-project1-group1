@@ -17,7 +17,6 @@ jobs:
         shell: bash
 # Checkout the repository to the GitHub Actions runner
     steps:
-      - name: Checkout
         uses: actions/checkout@v2
 # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc. 
 # Generates an execution plan for Terraform 
