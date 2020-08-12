@@ -7,7 +7,6 @@ on:
     branches: [ master ]
     paths: [ 'terraform/**' ]
   
-name: on-push-terraform
 
 jobs:
   deploy:
@@ -22,10 +21,10 @@ jobs:
     steps:
         uses: actions/checkout@v2
 # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-      - name: apply
+        name: apply
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}        
-      if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         run: |
           make all
