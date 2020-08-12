@@ -17,7 +17,7 @@ resource "aws_lb" "this" {
     Name = "${var.project}-lb"
   }
 }
-
+# TODO: improve TG creation to use the same configuration for both TG chaging only the name basically
 resource "aws_lb_target_group" "this" {
   name     = "${var.project}-lb-tg"
   port     = local.targetPort
@@ -28,6 +28,7 @@ resource "aws_lb_target_group" "this" {
     healthy_threshold = 5
     timeout = 15
     unhealthy_threshold = 3
+    matcher = "200-308"
   }
 }
 
