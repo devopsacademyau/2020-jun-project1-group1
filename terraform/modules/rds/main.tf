@@ -40,13 +40,13 @@ resource "aws_security_group" "da_rds_security_group" {
 // defining aurora
 // TODO: implement random passwords with SSM
 resource "aws_rds_cluster" "da-aurora-cluster" {
-  cluster_identifier      = "da-aurora-cluster"
-  engine                  = "aurora-mysql"
-  engine_version          = "5.7.mysql_aurora.2.07.1"
-  engine_mode             = "serverless"
+  cluster_identifier = "da-aurora-cluster"
+  engine             = "aurora-mysql"
+  engine_version     = "5.7.mysql_aurora.2.07.1"
+  engine_mode        = "serverless"
   # availability_zones      = ["ap-southeast-2"]
-  database_name           = aws_ssm_parameter.db_name.value #"mydb"
-  master_username         = aws_ssm_parameter.db_user.value  #"testuser"
+  database_name           = aws_ssm_parameter.db_name.value     #"mydb"
+  master_username         = aws_ssm_parameter.db_user.value     #"testuser"
   master_password         = aws_ssm_parameter.db_password.value #"test-password"
   backup_retention_period = 1
   vpc_security_group_ids  = [aws_security_group.da_rds_security_group.id]
@@ -84,7 +84,7 @@ resource "aws_ssm_parameter" "db_name" {
 }
 
 resource "aws_ssm_parameter" "db_user" {
-  name        = "WORDPRESS_DB_USERNAME"
+  name        = "WORDPRESS_DB_USER"
   description = "Database User Paramater"
   type        = "SecureString"
   value       = var.db_user

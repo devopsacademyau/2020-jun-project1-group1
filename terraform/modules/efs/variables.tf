@@ -12,7 +12,7 @@ variable "vpc" {
 }
 variable "cidr_block" {
   description = "cidr_block for the EFS"
-  type          = string
+  type        = string
 }
 
 variable "ecs_sg_id" {

@@ -1,5 +1,5 @@
 project       = "devops-wordpress"
-deploy_nat    = false
+deploy_nat    = true
 https_enabled = false
 
 port_mappings = [
@@ -13,6 +13,6 @@ port_mappings = [
 mount_points = [
   {
     containerPath = "/var/www/html",
-    sourceVolume  = "da-efs-storage"
+    sourceVolume  = "efs-system-file"
   }
 ]

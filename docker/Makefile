@@ -18,10 +18,12 @@ build:
 
 push:
 	@echo "\n === 🔖 Tagging image with sha ${C_GREEN}${COMMIT_SHA}${C_RESET}"
-	@docker tag devops-wordpress:latest ${DOCKER_REGISTRY_URL}/${DOCKER_REPOSITORY}:${COMMIT_SHA}
-	
+	@docker tag ${DOCKER_REPOSITORY}:latest ${DOCKER_REGISTRY_URL}/${DOCKER_REPOSITORY}:${COMMIT_SHA}
+	@docker tag ${DOCKER_REPOSITORY}:latest ${DOCKER_REGISTRY_URL}/${DOCKER_REPOSITORY}:latest
+
 	@echo "\n === 🚀 Pushing into repository\n"
 	docker push ${DOCKER_REGISTRY_URL}/${DOCKER_REPOSITORY}:${COMMIT_SHA}
+	docker push ${DOCKER_REGISTRY_URL}/${DOCKER_REPOSITORY}:latest
 	@echo "\n === ✅ Done"
 .PHONY:push
 

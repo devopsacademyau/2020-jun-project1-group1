@@ -6,7 +6,7 @@ module "vpc" {
 }
 
 module "rds" {
-  source = "./modules/rds"
+  source  = "./modules/rds"
   project = var.project
   vpc = {
     id         = module.vpc.vpc_id
@@ -24,7 +24,8 @@ module "load_balancer" {
 }
 
 module "container_registry" {
-  source = "./modules/container_registry"
+  source          = "./modules/container_registry"
+  repository_name = "devops-wp"
 }
 
 module "efs" {
@@ -45,10 +46,10 @@ module "ecs_cluster_wordpress" {
   vpc_id           = module.vpc.vpc_id
   subnet-public-1  = module.vpc.subnet-public-1
   subnet-public-2  = module.vpc.subnet-public-2
+  instance_keypair = var.instance_keypair
 
   container_name  = module.container_registry.ecr_repository.name
   container_image = module.container_registry.ecr_repository.repository_url
-
   secrets = [
     {
       name      = module.rds.secrets.db_host.name
@@ -80,18 +81,18 @@ module "ecs_cluster_wordpress" {
   mount_points = var.mount_points
 }
 
-module "code_deploy" {
-  source                     = "./modules/ecs-code-deploy"
-  project                    = var.project
-  ecs_cluster_name           = module.ecs_cluster_wordpress.ecs_name
-  ecs_service_name           = module.ecs_cluster_wordpress.ecs_service_name
-  lb_listener_arns           = [module.load_balancer.http_alb_listener_arn]
-  blue_lb_target_group_name  = module.load_balancer.alb_target_group_name
-  green_lb_target_group_name = module.load_balancer.alb_group_green_name
+# module "code_deploy" {
+#   source                     = "./modules/ecs-code-deploy"
+#   project                    = var.project
+#   ecs_cluster_name           = module.ecs_cluster_wordpress.ecs_name
+#   ecs_service_name           = module.ecs_cluster_wordpress.ecs_service_name
+#   lb_listener_arns           = [module.load_balancer.http_alb_listener_arn]
+#   blue_lb_target_group_name  = module.load_balancer.alb_target_group_name
+#   green_lb_target_group_name = module.load_balancer.alb_group_green_name
 
-  auto_rollback_enabled            = true
-  auto_rollback_events             = ["DEPLOYMENT_FAILURE"]
-  action_on_timeout                = "STOP_DEPLOYMENT"
-  wait_time_in_minutes             = 20
-  termination_wait_time_in_minutes = 20
-}
+#   auto_rollback_enabled            = true
+#   auto_rollback_events             = ["DEPLOYMENT_FAILURE"]
+#   action_on_timeout                = "STOP_DEPLOYMENT"
+#   wait_time_in_minutes             = 20
+#   termination_wait_time_in_minutes = 20
+# }

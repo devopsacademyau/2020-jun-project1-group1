@@ -46,6 +46,9 @@ ecr-login:
 	@echo "\n === ✅ Done"
 .PHONY:ecr_login
 
+update-wp: ecr-login build-wp push-wp
+.PHONY:update-wp
+
 ga-test-env-files:
 	@if [ ! -f ".github/secrets" ]; then \
 		echo "${C_RED}must create secrets file in .github/secrets"; \
