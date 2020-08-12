@@ -18,13 +18,14 @@ jobs:
       run:
         shell: bash
 # Checkout the repository to the GitHub Actions runner
-    steps:
-        uses: actions/checkout@v2
 # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-        name: apply
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: apply
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}        
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-        run: |
-          make all
+        run: make all
+
