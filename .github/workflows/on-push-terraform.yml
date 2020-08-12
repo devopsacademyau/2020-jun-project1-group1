@@ -14,10 +14,10 @@ jobs:
     name: apply
     runs-on: ubuntu-20.04
 
-# Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
-      	run:
-           shell: bash
+      run:
+        shell: bash
 # Checkout the repository to the GitHub Actions runner
     steps:
       - name: Checkout

@@ -11,10 +11,10 @@ jobs:
   deploy:
     name: plan
     runs-on: ubuntu-latest
-# Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
-      	run:
-           shell: bash
+      run:
+        shell: bash
 # Checkout the repository to the GitHub Actions runner
     steps:
       - name: Checkout
