@@ -9,6 +9,7 @@ AWS_DEFAULT_REGION ?= $(shell cat ~/.aws/config | grep -m 1 region | sed 's/regi
 AWS_ACCOUNT_ID ?= $(shell aws sts get-caller-identity --query "Account" --output text)
 DOCKER_REGISTRY_URL ?= ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
 DOCKER_REPOSITORY ?= devops-wordpress
+PROJECT_NAME ?= devops-wordpress
 
 docs-terraform:
 	@scripts/update-terraform-docs.sh
@@ -24,9 +25,13 @@ push-wp:
 .PHONY: push-wp
 
 deploy-wp:
-	@export DOCKER_REPOSITORY=${DOCKER_REPOSITORY}
-	@export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
-	@scripts/deploy-wp.sh
+	$(DOCKER_RUNNER) \
+		-e PROJECT_NAME=${PROJECT_NAME} \
+		-e DOCKER_REPOSITORY_URL="${DOCKER_REGISTRY_URL}/${DOCKER_REPOSITORY}" \
+		-e DOCKER_REPOSITORY_NAME=${DOCKER_REPOSITORY} \
+		--entrypoint /bin/sh \
+		aws \
+		scripts/deploy-wp.sh
 .PHONY: deploy-wp
 
 ecr-login:
@@ -99,9 +104,14 @@ tf-ci-remove:
 	@$(DOCKER_RUNNER) ci-terraform destroy -auto-approve -var-file="main.tfvars"
 .PHONY:tf-ci-remove
 
-
-all : 
+all: 
 	make tf-ci-plan
 	make tf-ci-apply
 .PHONY: all
+
+boot-n-run:
+	$(DOCKER_RUNNER) ci-terraform apply -var-file=main.tfvars -target=module.container_registry
+	$(MAKE) update-wp
+	$(DOCKER_RUNNER) ci-terraform apply -var-file=main.tfvars 
+.PHONY:boot-n-run
 

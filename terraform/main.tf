@@ -47,6 +47,7 @@ module "ecs_cluster_wordpress" {
   subnet-public-1  = module.vpc.subnet-public-1
   subnet-public-2  = module.vpc.subnet-public-2
   instance_keypair = var.instance_keypair
+  desired_count = 3
 
   container_name  = module.container_registry.ecr_repository.name
   container_image = module.container_registry.ecr_repository.repository_url

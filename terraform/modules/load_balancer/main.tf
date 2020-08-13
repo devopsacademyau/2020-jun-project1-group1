@@ -25,9 +25,10 @@ resource "aws_lb_target_group" "this" {
   vpc_id   = var.vpc_id
   slow_start = 30
   health_check {
-    healthy_threshold = 5
-    timeout = 15
-    unhealthy_threshold = 3
+    interval = 100 # was 300
+    healthy_threshold = 3
+    timeout = 90 # was 120
+    unhealthy_threshold = 5
     matcher = "200-308"
   }
 }

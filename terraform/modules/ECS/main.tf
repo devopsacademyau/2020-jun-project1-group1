@@ -137,7 +137,7 @@ resource "aws_autoscaling_group" "ecs-autoscaling-group" {
   max_size                  = var.max-size
   min_size                  = var.min-size
   wait_for_capacity_timeout = 0
-  desired_capacity          = min(var.desired_count, var.min-size)
+  desired_capacity          = var.desired_count < var.min-size ? var.min-size : var.desired_count
   vpc_zone_identifier       = [var.subnet-public-1, var.subnet-public-2]
   health_check_type         = "EC2"
   target_group_arns         = [var.target_group_arn]
@@ -152,6 +152,12 @@ resource "aws_autoscaling_group" "ecs-autoscaling-group" {
     key                 = "Name"
     value               = "${var.project-name}-ECS"
     propagate_at_launch = true
+  }
+
+  lifecycle {
+    ignore_changes = [
+      desired_capacity
+    ]
   }
 }
 
@@ -239,8 +245,8 @@ resource "aws_ecs_service" "this" {
   task_definition = aws_ecs_task_definition.this.arn
   desired_count   = var.desired_count
   iam_role        = data.aws_iam_role.ecs.arn
-
   depends_on = [aws_iam_role_policy.this]
+  deployment_minimum_healthy_percent = 60
 
   # deployment_controller {
   #   type = "CODE_DEPLOY"
@@ -258,4 +264,10 @@ resource "aws_ecs_service" "this" {
   tags = merge(var.common_tags, {
     Name = "${var.project-name}-ecs_service"
   })
+
+  lifecycle {
+    ignore_changes = [
+      task_definition
+    ]
+  }
 }

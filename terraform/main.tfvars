@@ -1,5 +1,5 @@
 project       = "devops-wordpress"
-deploy_nat    = true
+deploy_nat    = false
 https_enabled = false
 
 port_mappings = [

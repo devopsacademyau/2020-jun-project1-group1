@@ -1,7 +1,45 @@
-# TODO: replace for the script to deploy the ECS
-echo "=== 🧯🧯🧯 SIMULATION ==="
-echo "SHOULD DEPLOY USING SHA:"
-aws ecr describe-images \
-    --repository-name ${DOCKER_REPOSITORY} \
+# steps:
+# get latest task definition
+# update image line to new image sha
+# register task definition
+# update service to new task def with force deployment
+
+echo "Using Variables:"
+echo "PROJECT_NAME: ${PROJECT_NAME}"
+echo "DOCKER_REPOSITORY_URL: ${DOCKER_REPOSITORY_URL}"
+echo "DOCKER_REPOSITORY_NAME: ${DOCKER_REPOSITORY_NAME}"
+
+echo "Download last valid definition"
+
+aws ecs describe-task-definition \
+    --task-definition ${PROJECT_NAME}-task-definition \
+    --output json \
+    --query '{containerDefinitions:taskDefinition.containerDefinitions,family:taskDefinition.family,executionRoleArn:taskDefinition.executionRoleArn,volumes:taskDefinition.volumes,placementConstraints:taskDefinition.placementConstraints,memory:taskDefinition.memory}' \
+    > task-definition.json
+
+echo "Getting latest image tag"
+
+IMAGE_TAG=$(aws ecr describe-images \
+    --repository-name ${DOCKER_REPOSITORY_NAME} \
     --query 'reverse(sort_by(imageDetails,& imagePushedAt))[0].imageTags[-1]' \
-    --output text
+    --output text)
+
+echo "updating task definition with new image url"
+
+sed -i "s|.*\"image\":.*|\"image\": \"$DOCKER_REPOSITORY_URL:$IMAGE_TAG\",|" task-definition.json
+
+echo "registering task definition"
+
+TASK_DEFINITION_ARN=$(aws ecs register-task-definition \
+    --cli-input-json file://task-definition.json \
+    --query "taskDefinition.taskDefinitionArn" \
+    --output text | sed "s|.*/||")
+
+echo "updating service task definition"
+
+aws ecs update-service \
+    --cluster ${PROJECT_NAME}-ecs-cluster \
+    --service ${PROJECT_NAME}-ecs_service \
+    --task-definition $TASK_DEFINITION_ARN \
+    --force-new-deployment \
+    --query "service.clusterArn"
