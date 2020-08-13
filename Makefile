@@ -109,9 +109,26 @@ all:
 	make tf-ci-apply
 .PHONY: all
 
-boot-n-run:
-	$(DOCKER_RUNNER) ci-terraform apply -var-file=main.tfvars -target=module.container_registry
-	$(MAKE) update-wp
-	$(DOCKER_RUNNER) ci-terraform apply -var-file=main.tfvars 
-.PHONY:boot-n-run
+kick-n-run:
+	@echo "${C_GREEN}"
+	@echo "This process will kickoff all terraform modules and apply to your AWS account"
+	@echo "It will also build and push a fresh docker image for the ECR"
+	@echo "The whole process might take up to 7-10min till finish (applying and waiting resource provisioning)"
+	@echo "${C_RED}"
+	@echo -n "\nContinue? [y/N] If yes, literally kick 🦶 and run 🏃‍♀️🏃‍♂️💨💨\n" && read ans && [ $${ans:-N} = y ]
+	@echo "${C_RESET}"
+
+	@$(DOCKER_RUNNER) ci-terraform init 
+	@$(DOCKER_RUNNER) ci-terraform apply -auto-approve -var-file=main.tfvars -target=module.container_registry
+	@$(MAKE) update-wp
+	@$(DOCKER_RUNNER) ci-terraform apply -auto-approve -var-file=main.tfvars 
+	@$(MAKE) wait-lb
+.PHONY:kick-n-run
+
+wait-lb:
+	@echo "${C_RED}Waiting until the LB is ready${C_RESET}"
+	@$(DOCKER_RUNNER) aws elbv2 wait load-balancer-available --load-balancer-arns $(shell jq ".outputs[\"lb-module\"].value.load_balancer.arn" ./terraform/terraform.tfstate)
+	@echo "${C_GREEN}Green is good, the LB was provisioned, but the targets might be in registering stage yet.${C_RESET}"
+	@echo "Open the browser at http://$(shell jq ".outputs[\"lb-module\"].value.load_balancer.dns_name" ./terraform/terraform.tfstate)"
+.PHONY:wait-lb
 
