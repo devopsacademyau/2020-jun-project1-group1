@@ -13,6 +13,6 @@ port_mappings = [
 mount_points = [
   {
     containerPath = "/var/www/html",
-    sourceVolume  = "da-efs-storage"
+    sourceVolume  = "efs-system-file"
   }
 ]

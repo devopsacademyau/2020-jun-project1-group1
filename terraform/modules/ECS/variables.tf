@@ -11,12 +11,12 @@ variable "max-size" {
 variable "min-size" {
   description = "Minimum number of instances in the cluster"
   type        = number
-  default     = 1
+  default     = 2
 }
 
 variable "image_id" {
   type    = string
-  default = "ami-0b781a9543e01e880"
+  default = "ami-0a7c4f7f17d3eecbc"
 }
 
 variable "instance_type" {
@@ -54,7 +54,7 @@ variable "desired_count" {
 variable "container_port" {
   description = "The port value, already specified in the task definition, to be used for your service discovery service"
   type        = number
-  default     = 8080
+  default     = 80
 }
 
 variable "common_tags" {
@@ -132,4 +132,9 @@ variable "secrets" {
   }))
   description = "The secrets to pass to the container. This is a list of maps"
   default     = null
+}
+
+variable "instance_keypair" {
+  type    = string
+  default = null
 }
