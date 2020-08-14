@@ -95,3 +95,14 @@ module "code_deploy" {
   wait_time_in_minutes             = 20
   termination_wait_time_in_minutes = 20
 }
+
+module "cloudwatch" {
+  source           = "./modules/cloudwatch"
+  project_name     = var.project
+  rds_cluster_id   = module.rds.cluster_identifier
+  alb_arn_suffix   = module.load_balancer.load_balancer.arn_suffix
+  ecs_cluster_name = module.ecs_cluster_wordpress.ecs_name
+  ecs_service_name = module.ecs_cluster_wordpress.ecs_service_name
+  policy_cpu_low   = module.ecs_cluster_wordpress.autoscaling_policy_cpu_low
+  policy_cpu_high  = module.ecs_cluster_wordpress.autoscaling_policy_cpu_high
+}

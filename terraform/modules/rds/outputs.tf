@@ -18,3 +18,7 @@ output "secrets" {
         }
     }
 }
+output "cluster_identifier"{
+    value = aws_rds_cluster.da-aurora-cluster.cluster_identifier
+    description = "RDS cluster ID"
+}
