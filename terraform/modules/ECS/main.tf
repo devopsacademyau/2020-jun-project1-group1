@@ -111,6 +111,7 @@ resource "aws_launch_template" "this" {
   }
   network_interfaces {
     associate_public_ip_address = true
+    delete_on_termination = true
     security_groups = [
       aws_security_group.this.id
     ]
@@ -202,9 +203,9 @@ locals {
     readonlyRootFilesystem = var.readonly_root_filesystem
     secrets                = var.secrets
     mountPoints            = local.mount_points
-    portMappings = var.port_mappings
-    memory       = var.container_memory
-    cpu          = var.container_cpu
+    portMappings           = var.port_mappings
+    memory                 = var.container_memory
+    cpu                    = var.container_cpu
   }
 
   container_definition_without_null = {
@@ -240,12 +241,12 @@ resource "aws_ecs_task_definition" "this" {
 
 # ECS service
 resource "aws_ecs_service" "this" {
-  name            = "${var.project-name}-ecs_service"
-  cluster         = aws_ecs_cluster.ecs-cluster.id
-  task_definition = aws_ecs_task_definition.this.arn
-  desired_count   = var.desired_count
-  iam_role        = data.aws_iam_role.ecs.arn
-  depends_on = [aws_iam_role_policy.this]
+  name                               = "${var.project-name}-ecs_service"
+  cluster                            = aws_ecs_cluster.ecs-cluster.id
+  task_definition                    = aws_ecs_task_definition.this.arn
+  desired_count                      = var.desired_count
+  iam_role                           = data.aws_iam_role.ecs.arn
+  depends_on                         = [aws_iam_role_policy.this]
   deployment_minimum_healthy_percent = 60
 
   # deployment_controller {

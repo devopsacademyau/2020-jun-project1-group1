@@ -19,17 +19,17 @@ resource "aws_lb" "this" {
 }
 # TODO: improve TG creation to use the same configuration for both TG chaging only the name basically
 resource "aws_lb_target_group" "this" {
-  name     = "${var.project}-lb-tg"
-  port     = local.targetPort
-  protocol = local.targetProtocol
-  vpc_id   = var.vpc_id
+  name       = "${var.project}-lb-tg"
+  port       = local.targetPort
+  protocol   = local.targetProtocol
+  vpc_id     = var.vpc_id
   slow_start = 30
   health_check {
-    interval = 120 # was 300
-    healthy_threshold = 3
-    timeout = 90 # was 120
+    interval            = 150
+    healthy_threshold   = 3
+    timeout             = 90
     unhealthy_threshold = 5
-    matcher = "200-308"
+    matcher             = "200-308"
   }
 }
 
@@ -67,10 +67,10 @@ resource "aws_security_group" "allow_web" {
   }
 }
 
-resource "aws_lb_target_group" "green" {
-  name        = "green"
-  vpc_id      = var.vpc_id
-  port        = local.targetPort
-  protocol    = "HTTP"
-  target_type = "ip"
-}
+# resource "aws_lb_target_group" "green" {
+#   name        = "green"
+#   vpc_id      = var.vpc_id
+#   port        = local.targetPort
+#   protocol    = "HTTP"
+#   target_type = "ip"
+# }

@@ -26,18 +26,3 @@ push:
 	docker push ${DOCKER_REGISTRY_URL}/${DOCKER_REPOSITORY}:latest
 	@echo "\n === ✅ Done"
 .PHONY:push
-
-ecr-login:
-	@echo "\n === 🔐 Login to ECR docker registry: ${C_GREEN}${DOCKER_REGISTRY_URL}${C_RESET}\n"
-
-	@aws ecr get-login-password \
-		--region ${AWS_DEFAULT_REGION} \
-		| docker login \
-		--username AWS \
-		--password-stdin ${DOCKER_REGISTRY_URL}
-
-	@echo "\n === ✅ Done"
-.PHONY:ecr_login
-
-deploy: ecr-login build push
-.PHONY: deploy

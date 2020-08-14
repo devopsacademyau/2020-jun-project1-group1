@@ -16,12 +16,17 @@ docs-terraform:
 .PHONY:docs-terraform
 
 build-wp:
-	@cd docker && DOCKER_REPOSITORY=${DOCKER_REPOSITORY} $(MAKE) build
+	@cd docker \
+		&& DOCKER_REPOSITORY=${DOCKER_REPOSITORY} \
+		$(MAKE) build
 .PHONY: build-wp
 
 push-wp:
-	@export DOCKER_REPOSITORY=${DOCKER_REPOSITORY}
-	@cd docker && $(MAKE) push
+	@cd docker \
+		&& DOCKER_REPOSITORY=${DOCKER_REPOSITORY} \
+		AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} \
+		DOCKER_REGISTRY_URL=${DOCKER_REGISTRY_URL} \
+		$(MAKE) push
 .PHONY: push-wp
 
 deploy-wp:
@@ -120,14 +125,19 @@ kick-n-run:
 
 	@$(DOCKER_RUNNER) ci-terraform init 
 	@$(DOCKER_RUNNER) ci-terraform apply -auto-approve -var-file=main.tfvars -target=module.container_registry
-	@$(MAKE) update-wp
+	$(MAKE) update-wp
 	@$(DOCKER_RUNNER) ci-terraform apply -auto-approve -var-file=main.tfvars 
-	@$(MAKE) wait-lb
+	$(MAKE) wait-lb
 .PHONY:kick-n-run
 
 wait-lb:
-	@echo "${C_RED}Waiting until the LB is ready${C_RESET}"
+	@echo "${C_RED}Waiting until the LB is ready...${C_RESET}"
 	@$(DOCKER_RUNNER) aws elbv2 wait load-balancer-available --load-balancer-arns $(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.load_balancer.arn" ./terraform/terraform.tfstate)
+	@sleep 2m
+
+#@echo "${C_RED}Waiting until the Target Groups is ready...${C_RESET}"
+#@$(DOCKER_RUNNER) aws elbv2 wait target-in-service --target-group-arn $(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.target_group_arn" ./terraform/terraform.tfstate)
+	
 	@echo "${C_GREEN}Green is good, the LB was provisioned, but the targets might be in registering stage yet.${C_RESET}"
 	@echo "\bOpen the browser at http://$(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.load_balancer.dns_name" ./terraform/terraform.tfstate)"
 .PHONY:wait-lb

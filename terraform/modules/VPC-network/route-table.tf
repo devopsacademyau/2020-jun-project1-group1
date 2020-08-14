@@ -21,7 +21,7 @@ resource "aws_route_table" "route-table-PRI" {
 }
 
 resource "aws_route" "private-nat-route" {
-  count = var.deploy_nat ? 1 : 0
+  count                  = var.deploy_nat ? 1 : 0
   route_table_id         = aws_route_table.route-table-PRI.id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = aws_nat_gateway.NAT-GW[count.index].id
