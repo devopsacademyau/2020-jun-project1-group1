@@ -35,6 +35,8 @@ TASK_DEFINITION_ARN=$(aws ecs register-task-definition \
     --query "taskDefinition.taskDefinitionArn" \
     --output text | sed "s|.*/||")
 
+echo "Task Definition ARN: ${TASK_DEFINITION_ARN}"
+
 echo "updating service task definition"
 
 aws ecs update-service \

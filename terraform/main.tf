@@ -44,10 +44,8 @@ module "ecs_cluster_wordpress" {
   project-name     = var.project
   target_group_arn = module.load_balancer.target_group_arn
   vpc_id           = module.vpc.vpc_id
-  subnet-public-1  = module.vpc.subnet-public-1
-  subnet-public-2  = module.vpc.subnet-public-2
+  private_subnets  = module.vpc.private_subnets[*].id
   instance_keypair = var.instance_keypair
-  desired_count = 3
 
   container_name  = module.container_registry.ecr_repository.name
   container_image = module.container_registry.ecr_repository.repository_url
