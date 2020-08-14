@@ -127,8 +127,8 @@ kick-n-run:
 
 wait-lb:
 	@echo "${C_RED}Waiting until the LB is ready${C_RESET}"
-	@$(DOCKER_RUNNER) aws elbv2 wait load-balancer-available --load-balancer-arns $(shell jq ".outputs[\"lb-module\"].value.load_balancer.arn" ./terraform/terraform.tfstate)
+	@$(DOCKER_RUNNER) aws elbv2 wait load-balancer-available --load-balancer-arns $(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.load_balancer.arn" ./terraform/terraform.tfstate)
 	@echo "${C_GREEN}Green is good, the LB was provisioned, but the targets might be in registering stage yet.${C_RESET}"
-	@echo "Open the browser at http://$(shell jq ".outputs[\"lb-module\"].value.load_balancer.dns_name" ./terraform/terraform.tfstate)"
+	@echo "\bOpen the browser at http://$(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.load_balancer.dns_name" ./terraform/terraform.tfstate)"
 .PHONY:wait-lb
 
