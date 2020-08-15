@@ -110,7 +110,7 @@ resource "aws_launch_template" "this" {
     arn = aws_iam_instance_profile.ecs-instance-profile.arn
   }
   network_interfaces {
-    associate_public_ip_address = true
+    # associate_public_ip_address = true
     delete_on_termination = true
     security_groups = [
       aws_security_group.this.id
@@ -139,7 +139,8 @@ resource "aws_autoscaling_group" "ecs-autoscaling-group" {
   min_size                  = var.min-size
   wait_for_capacity_timeout = 0
   desired_capacity          = var.desired_count < var.min-size ? var.min-size : var.desired_count
-  vpc_zone_identifier       = [var.subnet-public-1, var.subnet-public-2]
+  # vpc_zone_identifier       = [var.subnet-public-1, var.subnet-public-2]
+  vpc_zone_identifier       = var.private_subnets
   health_check_type         = "EC2"
   target_group_arns         = [var.target_group_arn]
   health_check_grace_period = 300
@@ -183,6 +184,10 @@ resource "aws_autoscaling_policy" "autoscaling-policy" {
 # create ECS cluster
 resource "aws_ecs_cluster" "ecs-cluster" {
   name = "${var.project-name}-ecs-cluster"
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
 
 

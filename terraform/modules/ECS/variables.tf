@@ -16,7 +16,7 @@ variable "min-size" {
 
 variable "image_id" {
   type    = string
-  default = "ami-0a7c4f7f17d3eecbc"
+  default = "ami-0533a854980d7deb7"
 }
 
 variable "instance_type" {
@@ -26,8 +26,10 @@ variable "instance_type" {
 
 variable "vpc_id" {}
 variable "target_group_arn" {}
-variable "subnet-public-1" {}
-variable "subnet-public-2" {}
+
+variable "private_subnets" {
+  type = list(string)
+}
 
 variable "volume_name" {
   description = "The name of the volume"

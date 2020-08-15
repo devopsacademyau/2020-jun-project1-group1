@@ -21,7 +21,7 @@ echo "Getting latest image tag"
 
 IMAGE_TAG=$(aws ecr describe-images \
     --repository-name ${DOCKER_REPOSITORY_NAME} \
-    --query 'reverse(sort_by(imageDetails,& imagePushedAt))[0].imageTags[-1]' \
+    --query 'reverse(sort_by(imageDetails,& imagePushedAt))[0].imageTags[?@!=`latest`]' \
     --output text)
 
 echo "updating task definition with new image url"
@@ -34,6 +34,8 @@ TASK_DEFINITION_ARN=$(aws ecs register-task-definition \
     --cli-input-json file://task-definition.json \
     --query "taskDefinition.taskDefinitionArn" \
     --output text | sed "s|.*/||")
+
+echo "Task Definition ARN: ${TASK_DEFINITION_ARN}"
 
 echo "updating service task definition"
 
