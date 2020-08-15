@@ -42,13 +42,18 @@ This cloud migration is designed to comply with the following requirements:
 
 ### Technologies
 
-* [Github](https://github.com/)
-* [Terraform](https://www.terraform.io/)
-* [Github actions](https://github.com/features/actions/)
-* [Docker](https://www.docker.com/)
-* [Docker-compose](https://docs.docker.com/compose/)
-* [Amazon Aurora](https://aws.amazon.com/rds/aurora/)
-* [Amazon Elastic Container Service](https://aws.amazon.com/ecs/)
+* [Github](https://github.com/)  - version control
+* [Terraform](https://www.terraform.io/) - infra as code
+* [Github actions](https://github.com/features/actions/) CICD pipeline
+* [Docker](https://www.docker.com/) - containerisation
+* [Docker-compose](https://docs.docker.com/compose/) - containerisation
+* [Amazon Aurora](https://aws.amazon.com/rds/aurora/) - database
+* [Amazon Elastic Container Service](https://aws.amazon.com/ecs/) container orchestrator
+* [Amazon EFS](https://aws.amazon.com/efs/) - file storage
+* [Make](https://en.wikipedia.org/wiki/Make_(software)) - Automation
+
+
+
 
 ## Documents Index
 
@@ -67,25 +72,54 @@ This cloud migration is designed to comply with the following requirements:
 <!-- GETTING STARTED -->
 ## Getting Started
 
-TBC
-
 ### Prerequisites
+ * Create a Github account: https://github.com/join
 
-TBC
-* tbc
-```sh
-TBC
-```
+*  Create your AWS account: https://aws.amazon.com/free/start-your-free-trial/
 
-### Installation
+* Install AWS cli: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html
 
-TBC
+* Install Terraform cli: https://learn.hashicorp.com/terraform/getting-started/install.html
 
-<!-- USAGE EXAMPLES -->
+* Install Docker cli: https://docs.docker.com/install/
+
+
 ## Usage
 
-TBC
+<strong> Clone or download the repository to your machine: </strong>
+```
 
+git clone https://github.com/devopsacademyau/2020-jun-project1-group1.git
+
+```
+<strong> Set up your AWS credentials: </strong> 
+```
+aws configure
+```
+
+ <strong> Decide on where you want the terraform state files to be stored. local is fine, but s3 is recommened (https://www.terraform.io/docs/backends/types/s3.html) </strong> 
+```
+vim ./terraform/_backend.tf
+```
+
+ <strong> Review and update the main.tfvars file with your variables  </strong> 
+```
+vim ./terraform/main.tfvars
+```
+<strong> (Optional) plan the terraform build </strong>
+
+```
+make tf-ci-plan
+```
+<strong> Run below from your root directory </strong>
+
+```
+make kick-n-run
+```
+<strong>  Destroy the infrastructure </strong>
+```
+make tf-ci-remove
+```
 <!-- ROADMAP -->
 ## Roadmap
 
