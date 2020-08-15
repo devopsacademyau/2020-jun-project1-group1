@@ -21,7 +21,7 @@ echo "Getting latest image tag"
 
 IMAGE_TAG=$(aws ecr describe-images \
     --repository-name ${DOCKER_REPOSITORY_NAME} \
-    --query 'reverse(sort_by(imageDetails,& imagePushedAt))[0].imageTags[-1]' \
+    --query 'reverse(sort_by(imageDetails,& imagePushedAt))[0].imageTags[?@!=`latest`]' \
     --output text)
 
 echo "updating task definition with new image url"
