@@ -66,7 +66,7 @@ This cloud migration is designed to comply with the following requirements:
   * [ECR - Container Registry](terraform/modules/container_registry/README.md)
   * [Load Balancer](terraform/modules/load_balancer/README.md)
   * [RDS Database](terraform/modules/rds-aurora-database/README.md)
-  * **ECS Task and Service**
+  * [ECS Task and Service](terraform/modules/ECS/README.md)
   * [EFS](terraform/modules/efs/README.md)
 
 <!-- GETTING STARTED -->
@@ -83,6 +83,7 @@ This cloud migration is designed to comply with the following requirements:
 
 * Install Docker cli: https://docs.docker.com/install/
 
+* Install Make: https://www.gnu.org/software/make/manual/html_node/index.html#toc-Overview-of-make
 
 ## Usage
 
