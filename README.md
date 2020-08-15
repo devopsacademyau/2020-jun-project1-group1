@@ -48,9 +48,9 @@ This cloud migration is designed to comply with the following requirements:
 * [Docker](https://www.docker.com/) - containerisation
 * [Docker-compose](https://docs.docker.com/compose/) - containerisation
 * [Amazon Aurora](https://aws.amazon.com/rds/aurora/) - database
-* [Amazon Elastic Container Service](https://aws.amazon.com/ecs/) container orchestrator
+* [Amazon Elastic Container Service](https://aws.amazon.com/ecs/) - container orchestrator
 * [Amazon EFS](https://aws.amazon.com/efs/) - file storage
-* [Make](https://en.wikipedia.org/wiki/Make_(software)) - Automation
+* [Make](https://en.wikipedia.org/wiki/Make_(software)) - automation
 
 
 
