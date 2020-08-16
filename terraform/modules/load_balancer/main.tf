@@ -52,18 +52,26 @@ resource "aws_security_group" "allow_web" {
     to_port     = local.targetPort
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "allow TCP request from any source from the web"
   }
 
-  # TODO: restrict the egress, probably it would only need access to EC2 instances SG
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "allow TCP response to any source from the web"
   }
 
   tags = {
     Name = "${var.project}-allow-web-access-sg"
+  }
+
+  # the egress rules are modified outside this module, this will avoid forever diff between tfstates
+  lifecycle {
+    ignore_changes = [
+      egress
+    ]
   }
 }
 

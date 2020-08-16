@@ -1,4 +1,5 @@
-project       = "devops-wordpress"
+project         = "devops-wordpress"
+
 deploy_nat    = true
 https_enabled = false
 

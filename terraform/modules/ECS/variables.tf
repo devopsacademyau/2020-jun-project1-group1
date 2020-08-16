@@ -140,3 +140,7 @@ variable "instance_keypair" {
   type    = string
   default = null
 }
+
+variable "lb_security_group" {
+  type = string
+}

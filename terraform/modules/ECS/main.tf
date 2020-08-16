@@ -1,14 +1,17 @@
-#create ecs security group
+# ECS ports is random so we should allow the ephemeral port range from ALB: https://aws.amazon.com/premiumsupport/knowledge-center/dynamic-port-mapping-ecs/
 resource "aws_security_group" "this" {
   name   = "ecs-access-security-group"
   vpc_id = var.vpc_id
+
   ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-    #  security_groups =  output SG from alb????
-    description = "inbound allowed only via Application load balancer"
+    # from_port   = 32768
+    from_port = 0
+    to_port   = 65535
+    protocol  = "tcp"
+    security_groups = [
+      var.lb_security_group
+    ]
+    description = "ALB inbound - the ECS ports is set as random and can be any value between 32768-65535"
   }
 
   egress {
@@ -19,8 +22,24 @@ resource "aws_security_group" "this" {
   }
 
   tags = {
-    Name = "${var.project-name}-ecs-access-security-group"
+    Name = "${var.project-name}-ecs"
   }
+
+  lifecycle {
+    ignore_changes = [
+      egress
+    ]
+  }
+}
+
+resource "aws_security_group_rule" "lb_allow_egress" {
+  type                     = "egress"
+  from_port                = 0
+  to_port                  = 65535
+  protocol                 = "tcp"
+  security_group_id        = var.lb_security_group
+  source_security_group_id = aws_security_group.this.id
+  description              = "allow tcp egress to any port from the ECR security group"
 }
 
 resource "aws_iam_role" "ecs-instance-role" {

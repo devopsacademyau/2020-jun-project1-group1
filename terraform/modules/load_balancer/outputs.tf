@@ -23,6 +23,10 @@ output "alb_target_group_name" {
   description = "The name of the Target Group."
 }
 
+output "lb_security_group" {
+  value = aws_security_group.allow_web.id
+}
+
 # output "alb_group_green_name" {
 #   value       = aws_lb_target_group.green.name
 #   description = "The name of the Target Group Green."

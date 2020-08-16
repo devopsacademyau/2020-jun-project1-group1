@@ -12,7 +12,8 @@ module "rds" {
     id         = module.vpc.vpc_id
     cidr_block = var.vpcCIDR
   }
-  private_subnets = module.vpc.private_subnets[*].id
+  private_subnets    = module.vpc.private_subnets[*].id
+  ecs_security_group = module.ecs_cluster_wordpress.ecs-access-security-group
 }
 
 module "load_balancer" {
@@ -40,12 +41,13 @@ module "efs" {
 }
 
 module "ecs_cluster_wordpress" {
-  source           = "./modules/ECS"
-  project-name     = var.project
-  target_group_arn = module.load_balancer.target_group_arn
-  vpc_id           = module.vpc.vpc_id
-  private_subnets  = module.vpc.private_subnets[*].id
-  instance_keypair = var.instance_keypair
+  source            = "./modules/ECS"
+  project-name      = var.project
+  target_group_arn  = module.load_balancer.target_group_arn
+  vpc_id            = module.vpc.vpc_id
+  private_subnets   = module.vpc.private_subnets[*].id
+  instance_keypair  = var.instance_keypair
+  lb_security_group = module.load_balancer.lb_security_group
 
   container_name  = module.container_registry.ecr_repository.name
   container_image = module.container_registry.ecr_repository.repository_url
