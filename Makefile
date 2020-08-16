@@ -130,7 +130,16 @@ tf-ci-apply:
 
 tf-ci-remove:
 	@$(DOCKER_RUNNER) ci-terraform destroy -auto-approve -var-file="main.tfvars"
-.PHONY:tf-ci-remove
+.PHONY:tf-ci-remove 
+	
+tf-ci-lb:
+	@$(DOCKER_RUNNER) aws elbv2 describe-load-balancers --names ${PROJECT_NAME}-lb  --query LoadBalancers[].DNSName --output text
+.PHONY:tf-ci-lb
+
+tf-ci-lbarn:
+	@$(DOCKER_RUNNER) aws elbv2 describe-load-balancers --names ${PROJECT_NAME}-lb --query LoadBalancers[].LoadBalancerArn --output text 
+.PHONY:tf-ci-lbarn
+
 
 tf-all: 
 	make tf-ci-plan
@@ -155,12 +164,15 @@ kick-n-run: pull-required-images
 
 wait-lb: pull-required-images
 	@echo "${C_RED}Waiting until the LB is ready...${C_RESET}"
-	@$(DOCKER_RUNNER) aws elbv2 wait load-balancer-available --load-balancer-arns $(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.load_balancer.arn" ./terraform/terraform.tfstate)
+	@$(DOCKER_RUNNER) aws elbv2 wait load-balancer-available --load-balancer-arns $(make tf-ci-lbarn)
 	@sleep 2m
 
 #@echo "${C_RED}Waiting until the Target Groups is ready...${C_RESET}"
 #@$(DOCKER_RUNNER) aws elbv2 wait target-in-service --target-group-arn $(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.target_group_arn" ./terraform/terraform.tfstate)
 	
 	@echo "${C_GREEN}Green is good, the LB was provisioned, but the targets might be in registering stage yet.${C_RESET}"
-	@echo "\bOpen the browser at http://$(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.load_balancer.dns_name" ./terraform/terraform.tfstate)"
+#@echo "\bOpen the browser at http://$(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.load_balancer.dns_name" ./terraform/terraform.tfstate)"
+	@echo "DNS name outputted below"
+	$(MAKE) tf-ci-lb
+	@echo "give it a few minutes to boot up"
 .PHONY:wait-lb
