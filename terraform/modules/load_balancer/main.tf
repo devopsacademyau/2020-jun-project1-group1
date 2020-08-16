@@ -66,6 +66,13 @@ resource "aws_security_group" "allow_web" {
   tags = {
     Name = "${var.project}-allow-web-access-sg"
   }
+
+  # the egress rules are modified outside this module, this will avoid forever diff between tfstates
+  lifecycle {
+    ignore_changes = [
+      egress
+    ]
+  }
 }
 
 # resource "aws_lb_target_group" "green" {

@@ -23,6 +23,12 @@ resource "aws_security_group" "this" {
   tags = {
     Name = "${var.project-name}-ecs"
   }
+
+  lifecycle {
+    ignore_changes = [
+      egress
+    ]
+  }
 }
 
 resource "aws_security_group_rule" "lb_allow_egress" {

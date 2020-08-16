@@ -27,24 +27,25 @@ resource "aws_security_group" "efs_sg" {
   name   = "efs-sg"
 
   ingress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-    # TODO: fix the security
-    # from_port       = 2049
-    # to_port         = 2049
-    # security_groups = [var.ecs_sg_id]
+    protocol    = "tcp"
+    from_port       = 2049
+    to_port         = 2049
+    security_groups = [var.ecs_sg_id]
   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-    # TODO: fix the security
-    # cidr_blocks = [var.cidr_block]
-  }
+  tags = merge(var.common_tags, {
+    Name = "${var.project_name}-efs-sg"
+  })
+}
+
+resource "aws_security_group_rule" "ecs_allow_efs_egress" {
+  type = "egress"
+  from_port = 2049
+  to_port = 2049
+  protocol = "tcp"
+  security_group_id = var.ecs_sg_id
+  source_security_group_id = aws_security_group.efs_sg.id
+  description = "allow egress from ec2 instances to efs"
 }
 
 #Create Access Point
