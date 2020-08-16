@@ -25,21 +25,21 @@ locals {
       to_port   = 2049
       source    = "0.0.0.0/0"
     },
-    {
-      from_port = 80
-      to_port   = 80
-      source    = "::/0"
-    },
-    {
-      from_port = 443
-      to_port   = 443
-      source    = "::/0"
-    },
-    {
-      from_port = 32768
-      to_port   = 65535
-      source    = "::/0"
-    }
+    # {
+    #   from_port = 80
+    #   to_port   = 80
+    #   source    = "::/0"
+    # },
+    # {
+    #   from_port = 443
+    #   to_port   = 443
+    #   source    = "::/0"
+    # },
+    # {
+    #   from_port = 32768
+    #   to_port   = 65535
+    #   source    = "::/0"
+    # }
   ]
 }
 
@@ -144,3 +144,4 @@ resource "aws_network_acl_rule" "private-allow-egress" {
   cidr_block      = local.private_nacls_rules[count.index].source == "0.0.0.0/0" ? local.private_nacls_rules[count.index].source : null
   ipv6_cidr_block = local.private_nacls_rules[count.index].source == "::/0" ? local.private_nacls_rules[count.index].source : null
 }
+
