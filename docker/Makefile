@@ -18,24 +18,11 @@ build:
 
 push:
 	@echo "\n === 🔖 Tagging image with sha ${C_GREEN}${COMMIT_SHA}${C_RESET}"
-	@docker tag devops-wordpress:latest ${DOCKER_REGISTRY_URL}/${DOCKER_REPOSITORY}:${COMMIT_SHA}
-	
+	@docker tag ${DOCKER_REPOSITORY}:latest ${DOCKER_REGISTRY_URL}/${DOCKER_REPOSITORY}:${COMMIT_SHA}
+	@docker tag ${DOCKER_REPOSITORY}:latest ${DOCKER_REGISTRY_URL}/${DOCKER_REPOSITORY}:latest
+
 	@echo "\n === 🚀 Pushing into repository\n"
 	docker push ${DOCKER_REGISTRY_URL}/${DOCKER_REPOSITORY}:${COMMIT_SHA}
+	docker push ${DOCKER_REGISTRY_URL}/${DOCKER_REPOSITORY}:latest
 	@echo "\n === ✅ Done"
 .PHONY:push
-
-ecr-login:
-	@echo "\n === 🔐 Login to ECR docker registry: ${C_GREEN}${DOCKER_REGISTRY_URL}${C_RESET}\n"
-
-	@aws ecr get-login-password \
-		--region ${AWS_DEFAULT_REGION} \
-		| docker login \
-		--username AWS \
-		--password-stdin ${DOCKER_REGISTRY_URL}
-
-	@echo "\n === ✅ Done"
-.PHONY:ecr_login
-
-deploy: ecr-login build push
-.PHONY: deploy

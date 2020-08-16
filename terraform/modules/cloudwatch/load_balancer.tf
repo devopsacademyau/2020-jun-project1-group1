@@ -1,3 +1,7 @@
+
+resource "aws_sns_topic" "alerts" {
+  name = "alerts"
+}
 resource "aws_cloudwatch_metric_alarm" "alb" {
   alarm_name                = "${var.project}_loadbalancer_response-time"
   comparison_operator       = "GreaterThanThreshold"

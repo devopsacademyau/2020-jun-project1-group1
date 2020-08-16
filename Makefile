@@ -9,24 +9,34 @@ AWS_DEFAULT_REGION ?= $(shell cat ~/.aws/config | grep -m 1 region | sed 's/regi
 AWS_ACCOUNT_ID ?= $(shell aws sts get-caller-identity --query "Account" --output text)
 DOCKER_REGISTRY_URL ?= ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
 DOCKER_REPOSITORY ?= devops-wordpress
+PROJECT_NAME ?= devops-wordpress
 
 docs-terraform:
 	@scripts/update-terraform-docs.sh
 .PHONY:docs-terraform
 
 build-wp:
-	@cd docker && DOCKER_REPOSITORY=${DOCKER_REPOSITORY} $(MAKE) build
+	@cd docker \
+		&& DOCKER_REPOSITORY=${DOCKER_REPOSITORY} \
+		$(MAKE) build
 .PHONY: build-wp
 
 push-wp:
-	@export DOCKER_REPOSITORY=${DOCKER_REPOSITORY}
-	@cd docker && $(MAKE) push
+	@cd docker \
+		&& DOCKER_REPOSITORY=${DOCKER_REPOSITORY} \
+		AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} \
+		DOCKER_REGISTRY_URL=${DOCKER_REGISTRY_URL} \
+		$(MAKE) push
 .PHONY: push-wp
 
 deploy-wp:
-	@export DOCKER_REPOSITORY=${DOCKER_REPOSITORY}
-	@export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
-	@scripts/deploy-wp.sh
+	@$(DOCKER_RUNNER) \
+		-e PROJECT_NAME=${PROJECT_NAME} \
+		-e DOCKER_REPOSITORY_URL="${DOCKER_REGISTRY_URL}/${DOCKER_REPOSITORY}" \
+		-e DOCKER_REPOSITORY_NAME=${DOCKER_REPOSITORY} \
+		--entrypoint /bin/sh \
+		aws \
+		scripts/deploy-wp.sh
 .PHONY: deploy-wp
 
 ecr-login:
@@ -45,6 +55,9 @@ ecr-login:
 
 	@echo "\n === ✅ Done"
 .PHONY:ecr_login
+
+update-wp: ecr-login build-wp push-wp
+.PHONY:update-wp
 
 ga-test-env-files:
 	@if [ ! -f ".github/secrets" ]; then \
@@ -96,9 +109,36 @@ tf-ci-remove:
 	@$(DOCKER_RUNNER) ci-terraform destroy -auto-approve -var-file="main.tfvars"
 .PHONY:tf-ci-remove
 
-
-all : 
+all: 
 	make tf-ci-plan
 	make tf-ci-apply
 .PHONY: all
+
+kick-n-run:
+	@echo "${C_GREEN}"
+	@echo "This process will kickoff all terraform modules and apply to your AWS account"
+	@echo "It will also build and push a fresh docker image for the ECR"
+	@echo "The whole process might take up to 7-10min till finish (applying and waiting resource provisioning)"
+	@echo "${C_RED}"
+	@echo -n "\nContinue? [y/N] If yes, literally kick 🦶 and run 🏃‍♀️🏃‍♂️💨💨\n" && read ans && [ $${ans:-N} = y ]
+	@echo "${C_RESET}"
+
+	@$(DOCKER_RUNNER) ci-terraform init 
+	@$(DOCKER_RUNNER) ci-terraform apply -auto-approve -var-file=main.tfvars -target=module.container_registry
+	$(MAKE) update-wp
+	@$(DOCKER_RUNNER) ci-terraform apply -auto-approve -var-file=main.tfvars 
+	$(MAKE) wait-lb
+.PHONY:kick-n-run
+
+wait-lb:
+	@echo "${C_RED}Waiting until the LB is ready...${C_RESET}"
+	@$(DOCKER_RUNNER) aws elbv2 wait load-balancer-available --load-balancer-arns $(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.load_balancer.arn" ./terraform/terraform.tfstate)
+	@sleep 2m
+
+#@echo "${C_RED}Waiting until the Target Groups is ready...${C_RESET}"
+#@$(DOCKER_RUNNER) aws elbv2 wait target-in-service --target-group-arn $(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.target_group_arn" ./terraform/terraform.tfstate)
+	
+	@echo "${C_GREEN}Green is good, the LB was provisioned, but the targets might be in registering stage yet.${C_RESET}"
+	@echo "\bOpen the browser at http://$(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.load_balancer.dns_name" ./terraform/terraform.tfstate)"
+.PHONY:wait-lb
 

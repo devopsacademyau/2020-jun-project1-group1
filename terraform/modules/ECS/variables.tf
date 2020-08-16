@@ -11,12 +11,12 @@ variable "max-size" {
 variable "min-size" {
   description = "Minimum number of instances in the cluster"
   type        = number
-  default     = 1
+  default     = 2
 }
 
 variable "image_id" {
   type    = string
-  default = "ami-0b781a9543e01e880"
+  default = "ami-0533a854980d7deb7"
 }
 
 variable "instance_type" {
@@ -26,8 +26,10 @@ variable "instance_type" {
 
 variable "vpc_id" {}
 variable "target_group_arn" {}
-variable "subnet-public-1" {}
-variable "subnet-public-2" {}
+
+variable "private_subnets" {
+  type = list(string)
+}
 
 variable "volume_name" {
   description = "The name of the volume"
@@ -54,7 +56,7 @@ variable "desired_count" {
 variable "container_port" {
   description = "The port value, already specified in the task definition, to be used for your service discovery service"
   type        = number
-  default     = 8080
+  default     = 80
 }
 
 variable "common_tags" {
@@ -132,4 +134,32 @@ variable "secrets" {
   }))
   description = "The secrets to pass to the container. This is a list of maps"
   default     = null
+}
+
+variable "instance_keypair" {
+  type    = string
+  default = null
+}
+
+variable "autoscale_cooldown"{
+  description = "The cooldown"
+  default     = 30
+}
+
+variable "scale_out_step_adjustment" {
+  description = "The attributes of step scaling policy"
+  type        = map(string)
+  default     = {
+    metric_interval_lower_bound = 0
+    scaling_adjustment          = 1
+  }
+}
+
+variable "scale_in_step_adjustment" {
+  description = "The attributes of step scaling policy"
+  type        = map(string)
+  default     = {
+    metric_interval_upper_bound = 0
+    scaling_adjustment          = -1
+  }
 }

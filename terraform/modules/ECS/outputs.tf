@@ -1,5 +1,5 @@
 output "ecs-access-security-group" {
-  value = aws_security_group.ecs-access-security-group.id
+  value = aws_security_group.this.id
 }
 
 output "ecs_name" {

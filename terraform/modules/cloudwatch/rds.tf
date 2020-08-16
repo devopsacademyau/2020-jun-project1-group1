@@ -11,7 +11,7 @@ resource "aws_cloudwatch_metric_alarm" "rds" {
   threshold           = 70
   treat_missing_data  = "breaching"
 
-  #alarm_actions = [aws_sns_topic.alerts.arn]
+  alarm_actions = [aws_sns_topic.alerts.arn]
 
   dimensions = {
     DBClusterIdentifier = var.rds_cluster_id
