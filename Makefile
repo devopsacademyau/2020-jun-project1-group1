@@ -93,8 +93,21 @@ test-aws:
 	$(DOCKER_RUNNER) aws sts get-caller-identity --output json
 .PHONY:test-aws
 
+tf-backend-storage:
+	@echo ">> dynamodb create-table"
+	@$(DOCKER_RUNNER) aws dynamodb create-table \
+    --table-name da-terraform-lock \
+    --attribute-definitions AttributeName=LockID,AttributeType=S \
+    --key-schema AttributeName=LockID,KeyType=HASH \
+    --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
+    --tags Key=Name,Value=devops-wordpress-dynamodb
+
+	@echo ">> s3 mb"
+	@$(DOCKER_RUNNER) aws s3 mb s3://da-devops-terraform-state --region ap-southeast-2
+.PHONY:backend-storage	
 
 tf-ci-plan:
+	$(MAKE) tf-backend-storage
 	@$(DOCKER_RUNNER) ci-terraform init
 	@$(DOCKER_RUNNER) ci-terraform plan -var-file="main.tfvars" -out terraform-plan 
 .PHONY:tf-ci-plan
@@ -123,11 +136,13 @@ kick-n-run:
 	@echo -n "\nContinue? [y/N] If yes, literally kick 🦶 and run 🏃‍♀️🏃‍♂️💨💨\n" && read ans && [ $${ans:-N} = y ]
 	@echo "${C_RESET}"
 
+	$(MAKE) tf-backend-storage
+
 	@$(DOCKER_RUNNER) ci-terraform init 
 	@$(DOCKER_RUNNER) ci-terraform apply -auto-approve -var-file=main.tfvars -target=module.container_registry
 	$(MAKE) update-wp
 	@$(DOCKER_RUNNER) ci-terraform apply -auto-approve -var-file=main.tfvars 
-	$(MAKE) wait-lb
+	# $(MAKE) wait-lb
 .PHONY:kick-n-run
 
 wait-lb:
