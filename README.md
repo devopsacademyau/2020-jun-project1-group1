@@ -26,6 +26,7 @@
 	* [Change the name of the project](#change-the-name-of-the-project)
 	* [Change the name of the ECR repository](#change-the-name-of-the-ecr-repository)
 	* [Change the ECR repository location to another AWS account](#change-the-ecr-repository-location-to-another-aws-account)
+	* [Use S3 as terraform backend](#use-s3-as-terraform-backend)
 * [Roadmap](#roadmap)
 * [Contributing](#contributing)
 * [License](#license)
@@ -120,6 +121,10 @@ aws configure
 vim ./terraform/_backend.tf
 ```
 
+- Template file: [`.github/terraform/_backend.tf.template`](.github/terraform/_backend.tf.template)
+
+- Create S3 and dynamodb: run `make tf-backend-storage`
+
  **Review and update the main.tfvars file with your variables**
 
 ```bash
@@ -183,6 +188,12 @@ make tf-ci-remove
 ### Change the ECR repository location to another AWS account
 
 - Edit `.env` file in the root directory (create if doens't exists) and change the variable `DOCKER_REGISTRY_URL`
+
+### Use S3 as terraform backend
+
+- Use template file [`.github/terraform/_backend.tf.template`](.github/terraform/_backend.tf.template) to create the `_backend.tf` file into terraform folder. 
+
+- Create S3 and dynamodb: run `make tf-backend-storage`
 
 <!-- ROADMAP -->
 ## Roadmap
