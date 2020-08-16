@@ -24,6 +24,31 @@ locals {
       from_port = 2049
       to_port   = 2049
       source    = "0.0.0.0/0"
+    },
+    {
+      from_port = 80
+      to_port   = 80
+      source    = "::/0"
+    },
+    {
+      from_port = 443
+      to_port   = 443
+      source    = "::/0"
+    },
+    {
+      from_port = 32768
+      to_port   = 65535
+      source    = "::/0"
+    },
+    {
+      from_port = 3306
+      to_port   = 3306
+      source    = "::/0"
+    },
+    {
+      from_port = 2049
+      to_port   = 2049
+      source    = "::/0"
     }
   ]
 }
@@ -111,19 +136,22 @@ resource "aws_network_acl_rule" "private-allow-ingress" {
   rule_action    = "allow"
   from_port      = local.private_nacls_rules[count.index].from_port
   to_port        = local.private_nacls_rules[count.index].to_port
-  cidr_block     = local.private_nacls_rules[count.index].source
+
+  cidr_block      = local.private_nacls_rules[count.index].source == "0.0.0.0/0" ? local.private_nacls_rules[count.index].source : null
+  ipv6_cidr_block = local.private_nacls_rules[count.index].source == "::/0" ? local.private_nacls_rules[count.index].source : null
 }
 
 resource "aws_network_acl_rule" "private-allow-egress" {
   count = length(local.private_nacls_rules)
 
-  network_acl_id = aws_network_acl.NACL-PRI.id
-  rule_number    = 100 + count.index * 10
-  egress         = true
-  protocol       = "tcp"
-  rule_action    = "allow"
-  from_port      = local.private_nacls_rules[count.index].from_port
-  to_port        = local.private_nacls_rules[count.index].to_port
-  cidr_block     = local.private_nacls_rules[count.index].source
+  network_acl_id  = aws_network_acl.NACL-PRI.id
+  rule_number     = 100 + count.index * 10
+  egress          = true
+  protocol        = "tcp"
+  rule_action     = "allow"
+  from_port       = local.private_nacls_rules[count.index].from_port
+  to_port         = local.private_nacls_rules[count.index].to_port
+  cidr_block      = local.private_nacls_rules[count.index].source == "0.0.0.0/0" ? local.private_nacls_rules[count.index].source : null
+  ipv6_cidr_block = local.private_nacls_rules[count.index].source == "::/0" ? local.private_nacls_rules[count.index].source : null
 }
 
