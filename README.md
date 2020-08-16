@@ -9,18 +9,29 @@
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
 
-* [About the Project](#about-the-project)
-  * [Solution Diagram](#solution-diagram)
-  * [Technologies](#technologies)
-* [Documents](#documents-index)
+<!-- Start Document Outline -->
+
+* [About The Project](#about-the-project)
+	* [Solution Diagram](#solution-diagram)
+	* [Technologies](#technologies)
+* [Documents Index](#documents-index)
 * [Getting Started](#getting-started)
-  * [Prerequisites](#prerequisites)
-  * [Installation](#installation)
+	* [Prerequisites](#prerequisites)
 * [Usage](#usage)
+* [How To's](#how-tos)
+	* [Initiate the infrastructure](#initiate-the-infrastructure)
+	* [Update the docker image in the ECR](#update-the-docker-image-in-the-ecr)
+	* [Deploy a new docker image to the ECS](#deploy-a-new-docker-image-to-the-ecs)
+	* [Remove the resources created](#remove-the-resources-created)
+	* [Change the name of the project](#change-the-name-of-the-project)
+	* [Change the name of the ECR repository](#change-the-name-of-the-ecr-repository)
+	* [Change the ECR repository location to another AWS account](#change-the-ecr-repository-location-to-another-aws-account)
 * [Roadmap](#roadmap)
 * [Contributing](#contributing)
 * [License](#license)
 * [Contact](#contact)
+
+<!-- End Document Outline -->
 
 
 ## About The Project
@@ -147,7 +158,7 @@ make tf-ci-remove
 
 - Run [`make kick-n-run`](docs/scripts.md#kick-n-run)
 
-## Update the docker image in the ECR
+### Update the docker image in the ECR
 
 - Run [`make update-wp`](docs/scripts.md#update-wp)
 
@@ -213,4 +224,3 @@ TBC
 [issues-url]: https://github.com/devopsacademyau/2020-jun-project1-group1/issues
 [license-shield]: https://img.shields.io/github/license/devopsacademyau/2020-jun-project1-group1.svg?style=flat-square
 [license-url]: https://github.com/devopsacademyau/2020-jun-project1-group1/blob/master/LICENSE
-
