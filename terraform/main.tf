@@ -97,13 +97,3 @@ module "ecs_cluster_wordpress" {
 #   wait_time_in_minutes             = 20
 #   termination_wait_time_in_minutes = 20
 # }
-
-# resource "aws_security_group_rule" "ecs_to_rds" {
-#   type              = "ingress"
-#   from_port         = 3306
-#   to_port           = 3306
-#   protocol          = "tcp"
-#   security_group_id = module.rds.security_group
-#   source_security_group_id = module.ecs_cluster_wordpress.ecs-access-security-group
-#   description = "allow tcp egress to any port from the ECR security group"
-# }
