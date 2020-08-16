@@ -152,7 +152,7 @@ kick-n-run: pull-required-images
 wait-lb: pull-required-images
 	@echo "${C_RED}Waiting until the LB is ready...${C_RESET}"
 	@$(DOCKER_RUNNER) aws elbv2 wait load-balancer-available --load-balancer-arns $(make tf-ci-lbarn)
-#	@sleep 2m
+	@sleep 2m
 
 #@echo "${C_RED}Waiting until the Target Groups is ready...${C_RESET}"
 #@$(DOCKER_RUNNER) aws elbv2 wait target-in-service --target-group-arn $(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.target_group_arn" ./terraform/terraform.tfstate)
