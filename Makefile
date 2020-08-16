@@ -123,6 +123,11 @@ tf-ci-lb:
 	@$(DOCKER_RUNNER) aws elbv2 describe-load-balancers --names ${PROJECT_NAME}-lb  --query LoadBalancers[].DNSName --output text
 .PHONY:tf-ci-lb
 
+tf-ci-lbarn:
+	@$(DOCKER_RUNNER) aws elbv2 describe-load-balancers --names ${PROJECT_NAME}-lb --query LoadBalancers[].LoadBalancerArn --output text 
+.PHONY:tf-ci-lbarn
+
+
 tf-all: 
 	make tf-ci-plan
 	make tf-ci-apply
@@ -146,8 +151,8 @@ kick-n-run: pull-required-images
 
 wait-lb: pull-required-images
 	@echo "${C_RED}Waiting until the LB is ready...${C_RESET}"
-#@$(DOCKER_RUNNER) aws elbv2 wait load-balancer-available --load-balancer-arns $(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.load_balancer.arn" ./terraform/terraform.tfstate)
-#@sleep 2m
+	@$(DOCKER_RUNNER) aws elbv2 wait load-balancer-available --load-balancer-arns $(make tf-ci-lbarn)
+#	@sleep 2m
 
 #@echo "${C_RED}Waiting until the Target Groups is ready...${C_RESET}"
 #@$(DOCKER_RUNNER) aws elbv2 wait target-in-service --target-group-arn $(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.target_group_arn" ./terraform/terraform.tfstate)
