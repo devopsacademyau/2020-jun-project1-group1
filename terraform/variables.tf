@@ -55,3 +55,8 @@ variable "instance_keypair" {
   type    = string
   default = null
 }
+
+variable "repository_name" {
+  type    = string
+  default = "devops-wordpress"
+}

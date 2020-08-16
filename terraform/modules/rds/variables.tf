@@ -34,3 +34,7 @@ variable "db_password" {
   description = "Database Password"
   default     = "  "
 }
+
+variable "ecs_security_group" {
+  type = string
+}

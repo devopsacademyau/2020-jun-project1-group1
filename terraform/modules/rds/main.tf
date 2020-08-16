@@ -10,7 +10,7 @@ resource "aws_db_subnet_group" "da_db_subnet_group" {
 
 //defining security group
 // TODO: update rules accordingly
-resource "aws_security_group" "da_rds_security_group" {
+resource "aws_security_group" "this" {
   name        = "${var.project} access to mysql"
   description = "Allow inbound traffic on port 3306"
   vpc_id      = var.vpc.id
@@ -20,14 +20,9 @@ resource "aws_security_group" "da_rds_security_group" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = [var.vpc.cidr_block]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = [
+      var.ecs_security_group
+    ]
   }
 
   tags = {
@@ -49,7 +44,7 @@ resource "aws_rds_cluster" "da-aurora-cluster" {
   master_username         = aws_ssm_parameter.db_user.value     #"testuser"
   master_password         = aws_ssm_parameter.db_password.value #"test-password"
   backup_retention_period = 1
-  vpc_security_group_ids  = [aws_security_group.da_rds_security_group.id]
+  vpc_security_group_ids  = [aws_security_group.this.id]
   db_subnet_group_name    = aws_db_subnet_group.da_db_subnet_group.name
   skip_final_snapshot     = true
 

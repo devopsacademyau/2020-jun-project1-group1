@@ -141,6 +141,7 @@ variable "instance_keypair" {
   default = null
 }
 
+
 variable "autoscale_cooldown"{
   description = "The cooldown"
   default     = 30
@@ -162,4 +163,8 @@ variable "scale_in_step_adjustment" {
     metric_interval_upper_bound = 0
     scaling_adjustment          = -1
   }
+ }
+
+variable "lb_security_group" {
+  type = string
 }

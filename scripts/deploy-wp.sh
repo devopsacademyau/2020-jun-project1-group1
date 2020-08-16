@@ -6,8 +6,8 @@
 
 echo "Using Variables:"
 echo "PROJECT_NAME: ${PROJECT_NAME}"
-echo "DOCKER_REPOSITORY_URL: ${DOCKER_REPOSITORY_URL}"
-echo "DOCKER_REPOSITORY_NAME: ${DOCKER_REPOSITORY_NAME}"
+echo "DOCKER_REGISTRY_URL: ${DOCKER_REGISTRY_URL}"
+echo "DOCKER_REPOSITORY: ${DOCKER_REPOSITORY}"
 
 echo "Download last valid definition"
 
@@ -20,13 +20,13 @@ aws ecs describe-task-definition \
 echo "Getting latest image tag"
 
 IMAGE_TAG=$(aws ecr describe-images \
-    --repository-name ${DOCKER_REPOSITORY_NAME} \
+    --repository-name ${DOCKER_REPOSITORY} \
     --query 'reverse(sort_by(imageDetails,& imagePushedAt))[0].imageTags[?@!=`latest`]' \
     --output text)
 
 echo "updating task definition with new image url"
 
-sed -i "s|.*\"image\":.*|\"image\": \"$DOCKER_REPOSITORY_URL:$IMAGE_TAG\",|" task-definition.json
+sed -i "s|.*\"image\":.*|\"image\": \"${DOCKER_REGISTRY_URL}/${DOCKER_REPOSITORY}:${IMAGE_TAG}\",|" task-definition.json
 
 echo "registering task definition"
 
