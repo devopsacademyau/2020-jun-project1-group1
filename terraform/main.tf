@@ -12,7 +12,8 @@ module "rds" {
     id         = module.vpc.vpc_id
     cidr_block = var.vpcCIDR
   }
-  private_subnets = module.vpc.private_subnets[*].id
+  private_subnets    = module.vpc.private_subnets[*].id
+  ecs_security_group = module.ecs_cluster_wordpress.ecs-access-security-group
 }
 
 module "load_balancer" {
@@ -40,12 +41,12 @@ module "efs" {
 }
 
 module "ecs_cluster_wordpress" {
-  source           = "./modules/ECS"
-  project-name     = var.project
-  target_group_arn = module.load_balancer.target_group_arn
-  vpc_id           = module.vpc.vpc_id
-  private_subnets  = module.vpc.private_subnets[*].id
-  instance_keypair = var.instance_keypair
+  source            = "./modules/ECS"
+  project-name      = var.project
+  target_group_arn  = module.load_balancer.target_group_arn
+  vpc_id            = module.vpc.vpc_id
+  private_subnets   = module.vpc.private_subnets[*].id
+  instance_keypair  = var.instance_keypair
   lb_security_group = module.load_balancer.lb_security_group
 
   container_name  = module.container_registry.ecr_repository.name
@@ -95,4 +96,14 @@ module "ecs_cluster_wordpress" {
 #   action_on_timeout                = "STOP_DEPLOYMENT"
 #   wait_time_in_minutes             = 20
 #   termination_wait_time_in_minutes = 20
+# }
+
+# resource "aws_security_group_rule" "ecs_to_rds" {
+#   type              = "ingress"
+#   from_port         = 3306
+#   to_port           = 3306
+#   protocol          = "tcp"
+#   security_group_id = module.rds.security_group
+#   source_security_group_id = module.ecs_cluster_wordpress.ecs-access-security-group
+#   description = "allow tcp egress to any port from the ECR security group"
 # }
