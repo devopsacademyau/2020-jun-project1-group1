@@ -299,7 +299,7 @@ resource "aws_ecs_service" "this" {
 
 resource "aws_cloudwatch_log_group" "log" {
   name              = "/ecs/${var.project-name}"
-  retention_in_days = 30
+  # retention_in_days = 30
 }
 
 resource "aws_appautoscaling_target" "main" {
