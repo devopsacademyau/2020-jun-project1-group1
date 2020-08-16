@@ -89,7 +89,7 @@ module "ecs_cluster_wordpress" {
 #   ecs_service_name           = module.ecs_cluster_wordpress.ecs_service_name
 #   lb_listener_arns           = [module.load_balancer.http_alb_listener_arn]
 #   blue_lb_target_group_name  = module.load_balancer.alb_target_group_name
-#   green_lb_target_group_name = module.load_balancer.alb_group_green_name
+#   green_lb_target_group_name = module.load_balancer.alb_group_green_name}
 
 #   auto_rollback_enabled            = true
 #   auto_rollback_events             = ["DEPLOYMENT_FAILURE"]
@@ -97,3 +97,14 @@ module "ecs_cluster_wordpress" {
 #   wait_time_in_minutes             = 20
 #   termination_wait_time_in_minutes = 20
 # }
+
+module "cloudwatch" {
+  source           = "./modules/cloudwatch"
+  project          = var.project
+  rds_cluster_id   = module.rds.cluster_identifier
+  alb_arn_suffix   = module.load_balancer.load_balancer.arn_suffix
+  ecs_cluster_name = module.ecs_cluster_wordpress.ecs_name
+  ecs_service_name = module.ecs_cluster_wordpress.ecs_service_name
+  policy_cpu_low   = module.ecs_cluster_wordpress.autoscaling_policy_cpu_low
+  policy_cpu_high  = module.ecs_cluster_wordpress.autoscaling_policy_cpu_high
+}

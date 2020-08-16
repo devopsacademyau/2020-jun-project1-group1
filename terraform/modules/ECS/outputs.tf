@@ -9,3 +9,11 @@ output "ecs_name" {
 output "ecs_service_name" {
   value = aws_ecs_service.this.name
 }
+
+output "autoscaling_policy_cpu_low" {
+  value = aws_appautoscaling_policy.cpu_low.arn
+}
+
+output "autoscaling_policy_cpu_high" {
+  value = aws_appautoscaling_policy.cpu_high.arn
+}

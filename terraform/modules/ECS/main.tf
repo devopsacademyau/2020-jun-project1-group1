@@ -296,3 +296,56 @@ resource "aws_ecs_service" "this" {
     ]
   }
 }
+
+resource "aws_cloudwatch_log_group" "log" {
+  name              = "/ecs/${var.project-name}"
+  retention_in_days = 30
+}
+
+resource "aws_appautoscaling_target" "main" {
+  max_capacity       = 4
+  min_capacity       = 2
+  resource_id        = "service/${aws_ecs_cluster.ecs-cluster.name}/${aws_ecs_service.this.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "cpu_high" {
+  name               = "${var.project-name}-scale_out-cpu_utilization"
+  resource_id        = "service/${aws_ecs_cluster.ecs-cluster.name}/${aws_ecs_service.this.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = var.autoscale_cooldown
+    metric_aggregation_type = "Average"
+
+    step_adjustment {
+      metric_interval_lower_bound = var.scale_out_step_adjustment["metric_interval_lower_bound"]
+      scaling_adjustment          = var.scale_out_step_adjustment["scaling_adjustment"]
+    }
+  }
+
+  depends_on = [aws_appautoscaling_target.main]
+}
+
+resource "aws_appautoscaling_policy" "cpu_low" {
+  name               = "${var.project-name}-scale_in-cpu_utilization"
+  resource_id        = "service/${aws_ecs_cluster.ecs-cluster.name}/${aws_ecs_service.this.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = var.autoscale_cooldown
+    metric_aggregation_type = "Average"
+
+    step_adjustment {
+      metric_interval_upper_bound = var.scale_in_step_adjustment["metric_interval_upper_bound"]
+      scaling_adjustment          = var.scale_in_step_adjustment["scaling_adjustment"]
+    }
+  }
+
+  depends_on = [aws_appautoscaling_target.main]
+}
