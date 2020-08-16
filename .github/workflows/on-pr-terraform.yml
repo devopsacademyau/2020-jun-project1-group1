@@ -22,7 +22,7 @@ jobs:
         name: update terraform backend file
         id: tf_backend
         with:
-          _input-file: './.github/terraform/_backend.tf'
+          _input-file: './.github/templates/_backend.tf.template'
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
 
       - name: Update Terraform Backend
