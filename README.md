@@ -53,8 +53,6 @@ This cloud migration is designed to comply with the following requirements:
 * [Make](https://en.wikipedia.org/wiki/Make_(software)) - automation
 
 
-
-
 ## Documents Index
 
 * [Docker Wordpress - How to use](docs/docker-wordpress.md)
@@ -65,7 +63,7 @@ This cloud migration is designed to comply with the following requirements:
   * [ECS Cluster](terraform/modules/ECS/README.md)
   * [ECR - Container Registry](terraform/modules/container_registry/README.md)
   * [Load Balancer](terraform/modules/load_balancer/README.md)
-  * [RDS Database](terraform/modules/rds-aurora-database/README.md)
+  * [RDS Database](terraform/modules/rds/README.md)
   * [ECS Task and Service](terraform/modules/ECS/README.md)
   * [EFS](terraform/modules/efs/README.md)
 
@@ -73,9 +71,10 @@ This cloud migration is designed to comply with the following requirements:
 ## Getting Started
 
 ### Prerequisites
- * Create a Github account: https://github.com/join
 
-*  Create your AWS account: https://aws.amazon.com/free/start-your-free-trial/
+* Create a Github account: https://github.com/join
+
+* Create your AWS account: https://aws.amazon.com/free/start-your-free-trial/
 
 * Install AWS cli: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html
 
@@ -87,45 +86,97 @@ This cloud migration is designed to comply with the following requirements:
 
 ## Usage
 
-<strong> Clone or download the repository to your machine: </strong>
-```
+> 🔥🔥🔥 **TL;DR;** 🔥🔥🔥<br />
+> GRAB THE POPCORN 🍿 <br />
+> RUN **`make kick-n-run` (docker daemon must be running)**<br />
+> ENJOY THE SHOW 😎 🎦 
 
+**Clone or download the repository to your machine:**
+
+```bash
 git clone https://github.com/devopsacademyau/2020-jun-project1-group1.git
+```
 
-```
-<strong> Set up your AWS credentials: </strong> 
-```
+**Set up your AWS credentials:** 
+
+```bash
 aws configure
 ```
 
- <strong> Decide on where you want the terraform state files to be stored. local is fine, but s3 is recommened (https://www.terraform.io/docs/backends/types/s3.html) </strong> 
-```
+ **Decide on where you want the terraform state files to be stored. local is fine, but s3 is recommened (https://www.terraform.io/docs/backends/types/s3.html)** 
+
+```bash
 vim ./terraform/_backend.tf
 ```
 
- <strong> Review and update the main.tfvars file with your variables  </strong> 
-```
+ **Review and update the main.tfvars file with your variables**
+
+```bash
 vim ./terraform/main.tfvars
 ```
-<strong> (Optional) plan the terraform build </strong>
 
-```
+**(Optional) plan the terraform build**
+
+```bash
 make tf-ci-plan
 ```
-<strong> Run below from your root directory </strong>
 
-```
+**Run below from your root directory**
+
+```bash
 make kick-n-run
 ```
-<strong>  Destroy the infrastructure </strong>
+
+**Destroy the infrastructure**
+
 ```
 make tf-ci-remove
 ```
+
+<!-- HOW TO'S -->
+
+## How To's
+
+### Initiate the infrastructure
+
+- Run [`make tf-all`](docs/scripts.md#tf-all)
+
+> it will create the infrastructure commands only, it will not push the wordpress docker image.
+
+***Quickest way:***
+
+- Run [`make kick-n-run`](docs/scripts.md#kick-n-run)
+
+## Update the docker image in the ECR
+
+- Run [`make update-wp`](docs/scripts.md#update-wp)
+
+### Deploy a new docker image to the ECS
+
+- Run [`make deploy-wp`](docs/scripts.md#deploy-wp)
+
+### Remove the resources created
+
+- Run [`make tf-ci-remove`](docs/scripts.md#tf-ci-remove)
+
+### Change the name of the project
+
+- Edit [main.tfvars](terraform/main.tfvars) file and change the variable `project`.
+- Edit `.env` file in the root directory (create if doens't exists) and change the variable `PROJECT_NAME`
+
+### Change the name of the ECR repository
+
+- Edit [main.tfvars](terraform/main.tfvars) and change the variable `repository_name`.
+- Edit `.env` file in the root directory (create if doens't exists) and change the variable `DOCKER_REPOSITORY`
+
+### Change the ECR repository location to another AWS account
+
+- Edit `.env` file in the root directory (create if doens't exists) and change the variable `DOCKER_REGISTRY_URL`
+
 <!-- ROADMAP -->
 ## Roadmap
 
 See the [open issues](https://github.com/devopsacademyau/2020-jun-project1-group1/issues) for a list of proposed features (and known issues).
-
 
 
 <!-- CONTRIBUTING -->
@@ -140,13 +191,10 @@ Contributions are what make the open source community such an amazing place to b
 5. Open a Pull Request
 
 
-
 <!-- LICENSE -->
 ## License
 
 Distributed under the Creative Commons Public Licenses. See `LICENSE` for more information.
-
-
 
 <!-- CONTACT -->
 ## Contact

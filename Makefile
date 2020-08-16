@@ -11,6 +11,20 @@ DOCKER_REGISTRY_URL ?= ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws
 DOCKER_REPOSITORY ?= devops-wordpress
 PROJECT_NAME ?= devops-wordpress
 
+pull-required-images:
+	@if [ -z "$(shell docker image ls --filter=reference=amazon/aws-cli -q)" ]; then\
+		docker-compose pull aws;\
+	fi
+
+	@if [ -z "$(shell docker image ls --filter=reference=stedolan/jq -q)" ]; then\
+		docker-compose pull jq;\
+	fi
+
+	@if [ -z "$(shell docker image ls --filter=reference=hashicorp/terraform -q)" ]; then\
+		docker-compose pull ci-terraform;\
+	fi
+.PHONY:pull-required-images
+
 docs-terraform:
 	@scripts/update-terraform-docs.sh
 .PHONY:docs-terraform
@@ -32,20 +46,15 @@ push-wp:
 deploy-wp:
 	@$(DOCKER_RUNNER) \
 		-e PROJECT_NAME=${PROJECT_NAME} \
-		-e DOCKER_REPOSITORY_URL="${DOCKER_REGISTRY_URL}/${DOCKER_REPOSITORY}" \
-		-e DOCKER_REPOSITORY_NAME=${DOCKER_REPOSITORY} \
+		-e DOCKER_REGISTRY_URL=${DOCKER_REGISTRY_URL} \
+		-e DOCKER_REPOSITORY=${DOCKER_REPOSITORY} \
 		--entrypoint /bin/sh \
 		aws \
 		scripts/deploy-wp.sh
 .PHONY: deploy-wp
 
-ecr-login:
+ecr-login: pull-required-images
 	@echo "\n === 🔐 Login to ECR docker registry: ${C_GREEN}${DOCKER_REGISTRY_URL}${C_RESET}\n"
-
-# check if the amazon aws was pulled, if not, pull it first to avoid error in the docker login.
-	@if [ -z "$(shell docker image ls --filter=reference=amazon/aws-cli -q)" ]; then\
-		docker-compose pull aws;\
-	fi
 
 	@$(DOCKER_RUNNER) aws ecr get-login-password \
 		--region ${AWS_DEFAULT_REGION} \
@@ -89,8 +98,9 @@ ga-test-push-deploy-wp: ga-test-env-files
 		-P ubuntu-20.04=flemay/musketeers
 .PHONY:ga-test-push-wp
 
-test-aws:
-	$(DOCKER_RUNNER) aws sts get-caller-identity --output json
+aws-caller-identity:
+	@echo "Retrieving AWS caller identity"
+	@$(DOCKER_RUNNER) aws sts get-caller-identity --output json
 .PHONY:test-aws
 
 
@@ -109,12 +119,12 @@ tf-ci-remove:
 	@$(DOCKER_RUNNER) ci-terraform destroy -auto-approve -var-file="main.tfvars"
 .PHONY:tf-ci-remove
 
-all: 
+tf-all: 
 	make tf-ci-plan
 	make tf-ci-apply
-.PHONY: all
+.PHONY: tf-all
 
-kick-n-run:
+kick-n-run: pull-required-images
 	@echo "${C_GREEN}"
 	@echo "This process will kickoff all terraform modules and apply to your AWS account"
 	@echo "It will also build and push a fresh docker image for the ECR"
@@ -130,7 +140,7 @@ kick-n-run:
 	$(MAKE) wait-lb
 .PHONY:kick-n-run
 
-wait-lb:
+wait-lb: pull-required-images
 	@echo "${C_RED}Waiting until the LB is ready...${C_RESET}"
 	@$(DOCKER_RUNNER) aws elbv2 wait load-balancer-available --load-balancer-arns $(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.load_balancer.arn" ./terraform/terraform.tfstate)
 	@sleep 2m
@@ -141,4 +151,3 @@ wait-lb:
 	@echo "${C_GREEN}Green is good, the LB was provisioned, but the targets might be in registering stage yet.${C_RESET}"
 	@echo "\bOpen the browser at http://$(shell $(DOCKER_RUNNER) jq -r ".outputs[\"lb-module\"].value.load_balancer.dns_name" ./terraform/terraform.tfstate)"
 .PHONY:wait-lb
-

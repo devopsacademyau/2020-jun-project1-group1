@@ -25,7 +25,7 @@ module "load_balancer" {
 
 module "container_registry" {
   source          = "./modules/container_registry"
-  # repository_name = "devops-wp"
+  repository_name = var.repository_name
 }
 
 module "efs" {
