@@ -46,6 +46,7 @@ module "ecs_cluster_wordpress" {
   vpc_id           = module.vpc.vpc_id
   private_subnets  = module.vpc.private_subnets[*].id
   instance_keypair = var.instance_keypair
+  lb_security_group = module.load_balancer.lb_security_group
 
   container_name  = module.container_registry.ecr_repository.name
   container_image = module.container_registry.ecr_repository.repository_url

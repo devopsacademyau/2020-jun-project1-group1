@@ -1,4 +1,6 @@
-project       = "devops-wordpress"
+project         = "devops-wordpress1"
+repository_name = "devops-wp"
+
 deploy_nat    = true
 https_enabled = false
 
