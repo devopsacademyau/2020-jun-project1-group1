@@ -10,6 +10,7 @@ AWS_ACCOUNT_ID ?= $(shell aws sts get-caller-identity --query "Account" --output
 DOCKER_REGISTRY_URL ?= ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
 DOCKER_REPOSITORY ?= devops-wordpress
 PROJECT_NAME ?= devops-wordpress
+S3_BUCKET ?= da-devops-terraform
 
 pull-required-images:
 	@if [ -z "$(shell docker image ls --filter=reference=amazon/aws-cli -q)" ]; then\
@@ -103,6 +104,18 @@ aws-caller-identity:
 	@$(DOCKER_RUNNER) aws sts get-caller-identity --output json
 .PHONY:test-aws
 
+tf-backend-storage:
+	@echo ">> dynamodb create-table"
+	@$(DOCKER_RUNNER) aws dynamodb create-table \
+    --table-name ${S3_BUCKET}-lock \
+    --attribute-definitions AttributeName=LockID,AttributeType=S \
+    --key-schema AttributeName=LockID,KeyType=HASH \
+    --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
+    --tags Key=Name,Value=${PROJECT_NAME}-dynamodb
+
+	@echo ">> s3 mb"
+	@$(DOCKER_RUNNER) aws s3 mb s3://${S3_BUCKET} --region ap-southeast-2
+.PHONY:tf-backend-storage	
 
 tf-ci-plan:
 	@$(DOCKER_RUNNER) ci-terraform init
@@ -137,7 +150,7 @@ kick-n-run: pull-required-images
 	@$(DOCKER_RUNNER) ci-terraform apply -auto-approve -var-file=main.tfvars -target=module.container_registry
 	$(MAKE) update-wp
 	@$(DOCKER_RUNNER) ci-terraform apply -auto-approve -var-file=main.tfvars 
-	$(MAKE) wait-lb
+	# $(MAKE) wait-lb
 .PHONY:kick-n-run
 
 wait-lb: pull-required-images

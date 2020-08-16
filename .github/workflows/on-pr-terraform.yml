@@ -18,7 +18,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: plan terrform
+      - uses: bluwy/substitute-string-action@v1
+        name: update terraform backend file
+        id: tf_backend
+        with:
+          _input-file: './.github/templates/_backend.tf.template'
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+
+      - name: Update Terraform Backend
+        run: echo '${{ steps.tf_backend.outputs.result }}' > ./terraform/_backend.tf
+
+      - name: plan terraform
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
